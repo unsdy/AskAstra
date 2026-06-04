@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astra by SlickTrip — She keeps looking after you stop searching.</title>
+<meta name="description" content="Tell Astra about a trip. She checks flights, seats, hotels, cars and prices 24/7. When she finds something worth acting on, she texts you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+[data-theme="dark"]{
+  --bg:#07080c;--bg2:#0c0e16;--surface:#111420;--raised:#161a28;--card:#131621;
+  --border:rgba(255,255,255,0.065);--border2:rgba(255,255,255,0.12);--border3:rgba(255,255,255,0.18);
+  --text:#eeeef2;--text2:#7e8499;--text3:#3d4259;--text-inv:#0c0e16;
+  --nav-bg:rgba(7,8,12,0.82);
+  --astra:#c8b8ff;--astra2:#9b7cf4;--astra3:#6b4fd4;--astra-glow:rgba(107,79,212,0.22);
+  --aurora:#7fdcff;--dawn:#ffb085;--save:#6effc4;--save-dim:rgba(110,255,196,0.1);
+  --star:#ffe082;--risk:#ff7e7e;
+  --hero-grad:linear-gradient(160deg,#0d0f1a 0%,#07080c 60%);
+  --star-op:1;--neb1:rgba(107,79,212,0.14);--neb2:rgba(127,220,255,0.07);
+  --bubble-astra:rgba(107,79,212,0.14);--bubble-border:rgba(200,184,255,0.1);
+}
+[data-theme="light"]{
+  --bg:#f5f4f0;--bg2:#ece9e2;--surface:#ffffff;--raised:#f0eee9;--card:#fafaf8;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.12);--border3:rgba(0,0,0,0.2);
+  --text:#0e0f14;--text2:#5a5e70;--text3:#a0a4b8;--text-inv:#f5f4f0;
+  --nav-bg:rgba(245,244,240,0.88);
+  --astra:#6b4fd4;--astra2:#5038b8;--astra3:#3a27a0;--astra-glow:rgba(107,79,212,0.12);
+  --aurora:#0094cc;--dawn:#b86000;--save:#007a4a;--save-dim:rgba(0,122,74,0.08);
+  --star:#b8860b;--risk:#cc2222;
+  --hero-grad:linear-gradient(160deg,#eee9e0 0%,#f5f4f0 60%);
+  --star-op:0;--neb1:rgba(107,79,212,0.06);--neb2:rgba(0,148,204,0.04);
+  --bubble-astra:rgba(107,79,212,0.08);--bubble-border:rgba(107,79,212,0.12);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Geist',system-ui,sans-serif;line-height:1.6;overflow-x:hidden;transition:background .4s,color .4s;}
+
+/* STARS */
+.starfield{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:var(--star-op);transition:opacity .5s;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%,rgba(200,184,255,.5) 0%,transparent 0%),
+    radial-gradient(1px 1px at 70% 6%,rgba(127,220,255,.4) 0%,transparent 0%),
+    radial-gradient(1.5px 1.5px at 38% 52%,rgba(200,184,255,.3) 0%,transparent 0%),
+    radial-gradient(1px 1px at 85% 40%,rgba(255,224,130,.35) 0%,transparent 0%),
+    radial-gradient(1px 1px at 22% 75%,rgba(127,220,255,.3) 0%,transparent 0%),
+    radial-gradient(1px 1px at 58% 88%,rgba(200,184,255,.25) 0%,transparent 0%),
+    radial-gradient(1px 1px at 4% 55%,rgba(255,224,130,.3) 0%,transparent 0%),
+    radial-gradient(1px 1px at 91% 70%,rgba(110,255,196,.28) 0%,transparent 0%),
+    radial-gradient(1px 1px at 48% 30%,rgba(200,184,255,.2) 0%,transparent 0%),
+    radial-gradient(1px 1px at 76% 82%,rgba(127,220,255,.22) 0%,transparent 0%),
+    radial-gradient(1px 1px at 31% 96%,rgba(255,224,130,.2) 0%,transparent 0%),
+    radial-gradient(1px 1px at 64% 14%,rgba(200,184,255,.28) 0%,transparent 0%);}
+.nebula{position:fixed;border-radius:50%;pointer-events:none;filter:blur(100px);transition:opacity .5s;}
+.neb1{width:700px;height:700px;background:var(--neb1);top:-200px;right:-180px;}
+.neb2{width:500px;height:500px;background:var(--neb2);bottom:-100px;left:-120px;}
+
+.wrap{max-width:1160px;margin:0 auto;padding:0 32px;position:relative;z-index:1;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:0;position:relative;z-index:1;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);transition:background .4s,box-shadow .3s;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-logo-img{height:32px;width:auto;display:block;transition:opacity .4s;}
+.nav-logo-img.dark-logo{display:block;}
+.nav-logo-img.light-logo{display:none;}
+[data-theme="light"] .nav-logo-img.dark-logo{display:none;}
+[data-theme="light"] .nav-logo-img.light-logo{display:block;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.nav-links{display:flex;align-items:center;gap:4px;}
+.nav-link{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);text-decoration:none;padding:6px 12px;border-radius:100px;transition:color .2s,background .2s;}
+.nav-link:hover{color:var(--text);background:var(--raised);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.theme-toggle{width:44px;height:24px;border-radius:12px;background:var(--raised);border:1px solid var(--border2);
+  cursor:pointer;position:relative;transition:background .3s;flex-shrink:0;overflow:hidden;}
+.theme-toggle .tt-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;
+  background:var(--astra);transition:transform .3s cubic-bezier(.34,1.56,.64,1),background .3s;
+  box-shadow:0 1px 4px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:9px;}
+[data-theme="light"] .theme-toggle .tt-thumb{transform:translateX(20px);}
+.nav-cta{font-family:'Geist',sans-serif;font-size:13px;font-weight:500;color:#fff;background:var(--astra3);
+  border-radius:100px;padding:8px 20px;text-decoration:none;white-space:nowrap;
+  box-shadow:0 4px 16px var(--astra-glow);transition:background .2s,transform .2s,box-shadow .2s;}
+.nav-cta:hover{background:var(--astra2);transform:translateY(-1px);box-shadow:0 6px 24px var(--astra-glow);}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px;background:none;border:none;}
+.hamburger span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s;}
+.mobile-nav{display:none;position:fixed;top:64px;left:0;right:0;background:var(--bg2);
+  border-bottom:1px solid var(--border);padding:16px 24px 24px;z-index:199;flex-direction:column;gap:4px;transition:background .4s;}
+.mobile-nav.open{display:flex;}
+.mobile-nav a{font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.08em;color:var(--text2);
+  text-decoration:none;padding:12px 0;border-bottom:1px solid var(--border);transition:color .2s;}
+.mobile-nav a:last-child{border-bottom:none;}
+.mobile-nav a:hover{color:var(--astra);}
+
+/* ── HERO ── */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+  padding:100px 0 80px;background:var(--hero-grad);overflow:hidden;transition:background .5s;}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hero-kicker{display:inline-flex;align-items:center;gap:10px;margin-bottom:28px;
+  opacity:0;animation:riseIn .7s .1s cubic-bezier(.16,1,.3,1) forwards;}
+.k-dot{width:6px;height:6px;border-radius:50%;background:var(--astra);animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.kicker-text{font-family:'Geist Mono',monospace;font-size:10px;color:var(--astra);letter-spacing:.2em;text-transform:uppercase;transition:color .4s;}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(56px,8vw,100px);
+  font-weight:300;line-height:.97;letter-spacing:-.03em;color:var(--text);margin-bottom:10px;
+  opacity:0;animation:riseIn .8s .2s cubic-bezier(.16,1,.3,1) forwards;transition:color .4s;}
+.hero-title em{font-style:italic;color:var(--astra);transition:color .4s;}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,22px);
+  font-weight:300;font-style:italic;color:var(--text2);margin-bottom:28px;letter-spacing:.01em;
+  opacity:0;animation:riseIn .8s .3s cubic-bezier(.16,1,.3,1) forwards;transition:color .4s;}
+.hero-body{font-size:clamp(15px,1.2vw,17px);color:var(--text2);line-height:1.8;max-width:480px;margin-bottom:32px;
+  opacity:0;animation:riseIn .8s .4s cubic-bezier(.16,1,.3,1) forwards;transition:color .4s;}
+.hero-body strong{color:var(--text);font-weight:500;}
+.hero-triple{display:flex;gap:0;margin-bottom:36px;flex-wrap:wrap;row-gap:8px;
+  opacity:0;animation:riseIn .8s .5s cubic-bezier(.16,1,.3,1) forwards;}
+.triple-item{display:flex;align-items:center;gap:6px;font-family:'Geist Mono',monospace;font-size:11px;
+  color:var(--text3);letter-spacing:.06em;padding-right:16px;margin-right:16px;
+  border-right:1px solid var(--border2);transition:color .4s,border-color .4s;}
+.triple-item:last-child{border-right:none;margin-right:0;padding-right:0;}
+.t-dot{width:5px;height:5px;border-radius:50%;background:var(--astra);opacity:.6;flex-shrink:0;transition:background .4s;}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;
+  opacity:0;animation:riseIn .8s .6s cubic-bezier(.16,1,.3,1) forwards;}
+@keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* BUTTONS */
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--astra3);color:#fff;
+  border-radius:100px;padding:14px 28px;font-family:'Geist',sans-serif;font-size:14px;font-weight:500;
+  text-decoration:none;cursor:pointer;border:none;box-shadow:0 8px 32px var(--astra-glow);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,background .2s;}
+.btn-primary:hover{background:var(--astra2);transform:translateY(-2px);box-shadow:0 14px 40px var(--astra-glow);}
+.btn-star{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;font-size:9px;}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--text2);
+  border:1px solid var(--border2);border-radius:100px;padding:14px 28px;
+  font-family:'Geist',sans-serif;font-size:14px;text-decoration:none;
+  transition:color .2s,border-color .2s,background .2s;}
+.btn-ghost:hover{color:var(--text);border-color:var(--border3);background:var(--raised);}
+
+/* PHONE */
+.hero-right{display:flex;justify-content:center;align-items:center;
+  opacity:0;animation:riseIn .9s .35s cubic-bezier(.16,1,.3,1) forwards;}
+.phone-wrap{position:relative;animation:float 6s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.phone-wrap::before{content:'';position:absolute;width:120%;height:60%;
+  background:radial-gradient(ellipse,var(--astra-glow) 0%,transparent 70%);
+  bottom:-40px;left:50%;transform:translateX(-50%);filter:blur(30px);pointer-events:none;transition:background .4s;}
+.phone{width:275px;background:var(--surface);border:2px solid var(--border2);border-radius:44px;padding:12px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.3),0 40px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.05);
+  transition:background .4s,border-color .4s;}
+.ph-notch{width:80px;height:22px;background:var(--bg2);border-radius:0 0 14px 14px;margin:0 auto 10px;position:relative;transition:background .4s;}
+.ph-notch::after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:var(--raised);right:18px;top:50%;transform:translateY(-50%);transition:background .4s;}
+.ph-screen{border-radius:34px;overflow:hidden;background:var(--bg2);min-height:530px;display:flex;flex-direction:column;transition:background .4s;}
+.ph-status{display:flex;justify-content:space-between;padding:12px 18px 6px;font-family:'Geist Mono',monospace;font-size:11px;color:var(--text2);}
+.ph-hdr{padding:8px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ph-logo{display:flex;align-items:center;gap:7px;}
+.ph-mark{width:20px;height:20px;border-radius:50%;background:conic-gradient(from 180deg,var(--astra3),var(--astra),var(--aurora),var(--astra3));animation:spin 8s linear infinite;box-shadow:0 0 8px rgba(107,79,212,.4);}
+.ph-name{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--text);transition:color .4s;}
+.ph-watch{font-family:'Geist Mono',monospace;font-size:8px;color:var(--astra);letter-spacing:.1em;transition:color .4s;}
+.ph-chat{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;}
+.bbl{padding:9px 12px;border-radius:12px;font-size:11px;line-height:1.5;max-width:88%;}
+.bbl.a{background:var(--bubble-astra);border:1px solid var(--bubble-border);color:var(--text);align-self:flex-start;border-radius:12px 12px 12px 3px;transition:background .4s,border-color .4s,color .4s;}
+.bbl.u{background:var(--raised);border:1px solid var(--border2);color:var(--text2);align-self:flex-end;border-radius:12px 12px 3px 12px;font-style:italic;transition:background .4s,border-color .4s,color .4s;}
+.bbl-lbl{font-family:'Geist Mono',monospace;font-size:7px;letter-spacing:.15em;text-transform:uppercase;color:var(--astra);margin-bottom:4px;transition:color .4s;}
+.b-s{color:var(--save);font-weight:600;transition:color .4s;}
+.b-a{color:var(--dawn);font-weight:600;transition:color .4s;}
+.b-lnk{display:inline-block;margin-top:6px;background:rgba(200,184,255,.1);border:1px solid rgba(200,184,255,.2);
+  border-radius:6px;padding:4px 9px;font-family:'Geist Mono',monospace;font-size:8px;color:var(--astra);letter-spacing:.06em;}
+.ph-inp-row{padding:10px 12px 16px;border-top:1px solid var(--border);}
+.ph-inp{background:var(--raised);border:1px solid var(--border2);border-radius:100px;padding:9px 12px;display:flex;align-items:center;gap:8px;transition:background .4s,border-color .4s;}
+.ph-inp-txt{flex:1;font-size:10px;color:var(--text3);font-style:italic;transition:color .4s;}
+.ph-send{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--astra3),var(--astra2));display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;flex-shrink:0;}
+
+/* TRUST BAR */
+.trust-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 0;overflow:hidden;transition:background .4s;}
+.trust-track{display:flex;gap:56px;animation:marquee 28s linear infinite;width:max-content;}
+.trust-track:hover{animation-play-state:paused;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{display:flex;align-items:center;gap:10px;white-space:nowrap;flex-shrink:0;}
+.ti-val{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--astra);letter-spacing:-.02em;transition:color .4s;}
+.ti-lbl{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;transition:color .4s;}
+.ti-sep{width:1px;height:20px;background:var(--border2);flex-shrink:0;}
+
+/* SECTION COMMON */
+.sp{padding:96px 0;}
+.sec-lbl{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:10px;transition:color .4s;}
+.sl-dot{width:5px;height:5px;border-radius:50%;background:var(--astra);flex-shrink:0;transition:background .4s;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,58px);font-weight:300;
+  line-height:1.05;letter-spacing:-.02em;color:var(--text);margin-bottom:16px;transition:color .4s;}
+.sec-title em{font-style:italic;color:var(--astra);transition:color .4s;}
+.sec-body{font-size:clamp(15px,1.2vw,17px);color:var(--text2);line-height:1.8;max-width:560px;transition:color .4s;}
+
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border-radius:20px;overflow:hidden;margin-top:52px;}
+.step{background:var(--surface);padding:36px 30px 40px;position:relative;overflow:hidden;transition:background .3s,.4s;}
+.step:hover{background:var(--raised);}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:var(--border2);line-height:1;margin-bottom:20px;letter-spacing:-.05em;transition:color .4s;}
+.step h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;margin-bottom:10px;color:var(--text);transition:color .4s;}
+.step h3 em{font-style:italic;color:var(--astra);}
+.step p{font-size:14px;color:var(--text2);line-height:1.7;transition:color .4s;}
+.step-glow{position:absolute;width:160px;height:160px;border-radius:50%;filter:blur(60px);bottom:-60px;right:-40px;pointer-events:none;opacity:.1;}
+
+/* WATCH GRID */
+.watch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--border);border-radius:20px;overflow:hidden;}
+.wc{background:var(--surface);padding:32px 28px;transition:background .3s;position:relative;overflow:hidden;}
+.wc:hover{background:var(--raised);}
+.wc.wide{grid-column:span 2;}
+.wc-icon{font-size:28px;margin-bottom:14px;display:block;}
+.wc h3{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.2vw,26px);font-weight:400;margin-bottom:8px;color:var(--text);transition:color .4s;}
+.wc h3 em{font-style:italic;color:var(--astra);}
+.wc p{font-size:13.5px;color:var(--text2);line-height:1.7;max-width:400px;transition:color .4s;}
+.wc-tag{display:inline-flex;align-items:center;gap:5px;margin-top:14px;background:var(--save-dim);
+  border:1px solid rgba(110,255,196,.15);border-radius:100px;padding:3px 10px;
+  font-family:'Geist Mono',monospace;font-size:9px;color:var(--save);letter-spacing:.1em;text-transform:uppercase;transition:all .4s;}
+[data-theme="light"] .wc-tag{border-color:rgba(0,122,74,.15);}
+.wt-dot{width:4px;height:4px;border-radius:50%;background:var(--save);animation:pulse 2s infinite;}
+.wc-glow{position:absolute;width:200px;height:200px;border-radius:50%;filter:blur(80px);bottom:-60px;right:-40px;opacity:.08;pointer-events:none;}
+
+/* MAYBE */
+.maybe-sec{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:96px 0;transition:background .4s;}
+.maybe-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.maybe-list{display:flex;flex-direction:column;gap:0;}
+.mi{display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--border);transition:border-color .2s;}
+.mi:first-child{padding-top:0;}
+.mi:last-child{border-bottom:none;padding-bottom:0;}
+.mi:hover{border-color:var(--astra);}
+.mi-num{font-family:'Geist Mono',monospace;font-size:10px;color:var(--astra);letter-spacing:.15em;text-transform:uppercase;flex-shrink:0;padding-top:3px;transition:color .4s;}
+.mi-text{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.2vw,26px);font-weight:300;line-height:1.2;color:var(--text);transition:color .4s;}
+.mi-text em{font-style:italic;color:var(--text2);transition:color .4s;}
+.cta-block{background:linear-gradient(135deg,rgba(107,79,212,.08),rgba(127,220,255,.04));
+  border:1px solid rgba(200,184,255,.12);border-radius:20px;padding:36px;}
+[data-theme="light"] .cta-block{background:linear-gradient(135deg,rgba(107,79,212,.05),rgba(0,148,204,.03));border-color:rgba(107,79,212,.15);}
+.cb-mark{width:48px;height:48px;border-radius:50%;background:conic-gradient(from 180deg,var(--astra3),var(--astra),var(--aurora),var(--astra3));
+  animation:spin 8s linear infinite;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:20px;box-shadow:0 0 24px var(--astra-glow);}
+.cb-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:12px;color:var(--text);transition:color .4s;}
+.cb-title em{font-style:italic;color:var(--astra);}
+.cb-body{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:24px;transition:color .4s;}
+.cb-body strong{color:var(--text);font-weight:500;}
+
+/* ALERTS */
+.alert-sec{padding:96px 0;}
+.alert-inner{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.alert-device{display:flex;flex-direction:column;gap:16px;animation:float 5s 1s ease-in-out infinite;}
+.sms-card{background:var(--surface);border:1px solid var(--border2);border-radius:18px 18px 18px 5px;padding:20px 22px;box-shadow:0 12px 40px rgba(0,0,0,.15);transition:background .4s,border-color .4s;}
+.sms-from{display:flex;align-items:center;gap:8px;font-family:'Geist Mono',monospace;font-size:10px;color:var(--astra);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;transition:color .4s;}
+.sms-from::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--astra);animation:pulse 2.5s ease-in-out infinite;}
+.sms-text{font-size:15px;color:var(--text);line-height:1.75;transition:color .4s;}
+.sms-text .r{color:var(--aurora);font-weight:600;}
+.sms-text .p{color:var(--save);font-family:'Geist Mono',monospace;font-weight:500;}
+.sms-text .s{color:var(--dawn);font-weight:600;}
+.sms-text .d{color:var(--text2);}
+.sms-text .u{color:var(--astra);}
+.sms-actions{display:flex;gap:8px;margin-top:14px;}
+.sms-btn{flex:1;padding:9px;border-radius:9px;text-align:center;font-family:'Geist Mono',monospace;font-size:11px;cursor:pointer;transition:opacity .2s;font-weight:500;}
+.sms-btn:hover{opacity:.85;}
+.sms-btn.book{background:linear-gradient(135deg,var(--save),#3ed49b);color:var(--bg);}
+[data-theme="light"] .sms-btn.book{color:#002a1a;}
+.sms-btn.snooze{background:var(--raised);border:1px solid var(--border2);color:var(--text3);}
+.push-card{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:14px;display:flex;gap:11px;box-shadow:0 8px 30px rgba(0,0,0,.12);transition:background .4s,border-color .4s;}
+.push-icon{width:36px;height:36px;border-radius:9px;background:conic-gradient(from 180deg,var(--astra3),var(--astra),var(--aurora),var(--astra3));display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;}
+.pb-app{font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;transition:color .4s;}
+.pb-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;color:var(--text);transition:color .4s;}
+.pb-msg{font-size:11px;color:var(--text2);line-height:1.4;transition:color .4s;}
+.pb-save{color:var(--save);font-family:'Geist Mono',monospace;font-weight:500;}
+.alert-principles{display:flex;flex-direction:column;gap:14px;}
+.ap{display:flex;gap:12px;align-items:flex-start;padding:14px;border-left:2px solid var(--border2);transition:border-color .2s;}
+.ap:hover{border-color:var(--astra);}
+.ap-num{font-family:'Geist Mono',monospace;font-size:11px;color:var(--astra);flex-shrink:0;padding-top:2px;transition:color .4s;}
+.ap-title{font-size:13px;font-weight:600;margin-bottom:3px;color:var(--text);transition:color .4s;}
+.ap-body{font-size:12px;color:var(--text2);line-height:1.5;transition:color .4s;}
+
+/* PRICING */
+.pricing-sec{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:96px 0;transition:background .4s;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border-radius:20px;overflow:hidden;margin-top:52px;}
+.pc{background:var(--card);padding:36px 28px 40px;position:relative;transition:background .4s;}
+.pc.featured{background:linear-gradient(160deg,rgba(107,79,212,.08) 0%,var(--card) 100%);border-top:2px solid var(--astra);}
+[data-theme="light"] .pc.featured{background:linear-gradient(160deg,rgba(107,79,212,.06) 0%,var(--card) 100%);}
+.pc-tier{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;transition:color .4s;}
+.pc.featured .pc-tier{color:var(--astra);}
+.pc-price{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;letter-spacing:-.04em;color:var(--text);margin-bottom:2px;transition:color .4s;}
+.pc-price sup{font-size:24px;vertical-align:super;font-weight:300;}
+.pc-cadence{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:28px;letter-spacing:.06em;transition:color .4s;}
+.pc ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.pc ul li{font-size:13px;color:var(--text2);display:flex;align-items:flex-start;gap:8px;transition:color .4s;}
+.pc ul li::before{content:'✦';color:var(--text3);font-size:9px;margin-top:4px;flex-shrink:0;transition:color .4s;}
+.pc.featured ul li::before{color:var(--astra);}
+.pc.featured ul li{color:var(--text);}
+.pop-badge{position:absolute;top:18px;right:18px;background:rgba(200,184,255,.1);border:1px solid rgba(200,184,255,.2);
+  border-radius:100px;padding:3px 10px;font-family:'Geist Mono',monospace;font-size:8px;color:var(--astra);letter-spacing:.1em;text-transform:uppercase;}
+[data-theme="light"] .pop-badge{background:rgba(107,79,212,.08);border-color:rgba(107,79,212,.2);}
+
+/* FINAL CTA */
+.cta-sec{padding:120px 0;text-align:center;overflow:hidden;position:relative;}
+.cta-neb{position:absolute;width:800px;height:600px;background:radial-gradient(ellipse,var(--astra-glow) 0%,transparent 65%);
+  top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;filter:blur(60px);transition:background .4s;}
+.cta-lbl{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--text3);margin-bottom:20px;transition:color .4s;}
+.cta-h{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,7vw,88px);font-weight:300;line-height:1;letter-spacing:-.03em;color:var(--text);margin-bottom:20px;transition:color .4s;}
+.cta-h em{font-style:italic;color:var(--astra);}
+.cta-p{font-size:clamp(15px,1.3vw,18px);color:var(--text2);max-width:500px;margin:0 auto 36px;line-height:1.7;transition:color .4s;}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cta-small{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--text3);margin-top:18px;text-transform:uppercase;transition:color .4s;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:48px 0 36px;transition:border-color .4s;}
+.f-grid{display:grid;grid-template-columns:1fr auto auto auto;gap:64px;align-items:start;}
+.fb-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;font-style:italic;color:var(--text);margin-bottom:4px;transition:color .4s;}
+.fb-tag{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;transition:color .4s;}
+.fc h4{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;transition:color .4s;}
+.fc a{display:block;font-size:13px;color:var(--text2);text-decoration:none;margin-bottom:8px;transition:color .2s;}
+.fc a:hover{color:var(--astra);}
+.f-bottom{margin-top:40px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;transition:border-color .4s;}
+.f-bottom span{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.08em;transition:color .4s;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
+
+/* RESPONSIVE */
+@media(max-width:1040px){
+  .hero-inner{grid-template-columns:1fr;gap:56px;text-align:center;}
+  .hero-body,.hero-triple,.hero-ctas{max-width:100%;margin-left:auto;margin-right:auto;}
+  .hero-triple{justify-content:center;}
+  .hero-ctas{justify-content:center;}
+  .hero-right{display:none;}
+  .steps,.pricing-grid{grid-template-columns:1fr;}
+  .watch-grid,.maybe-inner,.alert-inner{grid-template-columns:1fr;}
+  .wc.wide{grid-column:span 1;}
+  .alert-device{max-width:420px;}
+  .f-grid{grid-template-columns:1fr 1fr;gap:40px;}
+}
+@media(max-width:680px){
+  .wrap{padding:0 20px;}
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .sp,.pricing-sec,.maybe-sec,.alert-sec{padding:64px 0;}
+  .cta-sec{padding:80px 0;}
+  .hero{padding:88px 0 60px;}
+  .f-grid{grid-template-columns:1fr;}
+  .fc:nth-child(n+3){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="starfield"></div>
+<div class="nebula neb1"></div>
+<div class="nebula neb2"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#">
+    <img class="nav-logo-img dark-logo" src="AstraLogoWhite.png" alt="Astra by SlickTrip">
+    <img class="nav-logo-img light-logo" src="AstraLogoDark.png" alt="Astra by SlickTrip">
+  </a>
+
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#watches" class="nav-link">What she watches</a>
+    <a href="#alerts" class="nav-link">Alerts</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+  </div>
+
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode">
+      <div class="tt-thumb" id="ttThumb">☀️</div>
+    </button>
+    <a href="#" class="nav-cta">Ask Astra ✦</a>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <a href="#how" onclick="toggleMenu()">How it works</a>
+  <a href="#watches" onclick="toggleMenu()">What she watches</a>
+  <a href="#alerts" onclick="toggleMenu()">Alerts</a>
+  <a href="#pricing" onclick="toggleMenu()">Pricing</a>
+  <a href="#cta" onclick="toggleMenu()">Ask Astra ✦</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-kicker">
+          <span class="k-dot"></span>
+          <span class="kicker-text">AI Travel Agent · Always watching</span>
+        </div>
+        <h1 class="hero-title">Ask<br><em>Astra.</em></h1>
+        <p class="hero-sub">She keeps looking after you stop searching.</p>
+        <p class="hero-body">
+          Tell Astra about a trip — booked, almost booked, or just a dream. She'll keep checking <strong>flights, seats, hotels, cars, dates, and prices</strong> in the background, 24/7. When she finds something worth acting on, she'll text you and tell you exactly what changed and why.
+        </p>
+        <div class="hero-triple">
+          <div class="triple-item"><span class="t-dot"></span>No risk</div>
+          <div class="triple-item"><span class="t-dot"></span>No pressure</div>
+          <div class="triple-item"><span class="t-dot"></span>No need to keep checking yourself</div>
+        </div>
+        <div class="hero-ctas">
+          <a href="#" class="btn-primary"><div class="btn-star">★</div>Ask Astra about your trip</a>
+          <a href="#how" class="btn-ghost">How it works ↓</a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="ph-notch"></div>
+            <div class="ph-screen">
+              <div class="ph-status">
+                <span>9:41</span><span>📶 🔋</span>
+              </div>
+              <div class="ph-hdr">
+                <div class="ph-logo">
+                  <div class="ph-mark"></div>
+                  <div class="ph-name">Astra</div>
+                </div>
+                <div class="ph-watch">Watching 4 trips</div>
+              </div>
+              <div class="ph-chat">
+                <div class="bbl a">
+                  <div class="bbl-lbl">Astra · just now</div>
+                  Your <strong>London flight</strong> dropped to <span class="b-s">$489</span> — that's <span class="b-s">$238 below average</span> and the cheapest in 90 days. Your target was $520.
+                  <div class="b-lnk">View fare & book →</div>
+                </div>
+                <div class="bbl u">"Is now the right time to book?"</div>
+                <div class="bbl a">
+                  <div class="bbl-lbl">Astra</div>
+                  Yes. These fares hold for <span class="b-a">2–4 hours</span>. There's a <span class="b-a">67% chance</span> it rises by Thursday. I'd book today.
+                </div>
+              </div>
+              <div class="ph-inp-row">
+                <div class="ph-inp">
+                  <div class="ph-inp-txt" id="typingTarget">Ask Astra about your trip…</div>
+                  <div class="ph-send">★</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar" role="marquee">
+  <div class="trust-track">
+    <div class="ti"><span class="ti-val">$238</span><span class="ti-lbl">average saving per alert</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">Every 15 min</span><span class="ti-lbl">prices re-checked</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">SMS-first</span><span class="ti-lbl">you'll actually see it</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">Flights · Seats · Hotels</span><span class="ti-lbl">cars · dates · airports</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">24/7</span><span class="ti-lbl">Astra never sleeps</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">Free to start</span><span class="ti-lbl">no card required</span></div>
+    <div class="ti-sep"></div>
+    <!-- duplicate for seamless loop -->
+    <div class="ti"><span class="ti-val">$238</span><span class="ti-lbl">average saving per alert</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">Every 15 min</span><span class="ti-lbl">prices re-checked</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">SMS-first</span><span class="ti-lbl">you'll actually see it</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">Flights · Seats · Hotels</span><span class="ti-lbl">cars · dates · airports</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">24/7</span><span class="ti-lbl">Astra never sleeps</span></div>
+    <div class="ti-sep"></div>
+    <div class="ti"><span class="ti-val">Free to start</span><span class="ti-lbl">no card required</span></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="sp" id="how">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sec-lbl"><span class="sl-dot"></span>How it works</div>
+      <h2 class="sec-title">Brief Astra once.<br>She works <em>forever.</em></h2>
+      <p class="sec-body">No need to keep checking travel sites. You tell Astra what you want — she does the watching and tells you when it matters.</p>
+    </div>
+    <div class="steps reveal d1">
+      <div class="step">
+        <div class="step-glow" style="background:var(--astra);"></div>
+        <div class="step-num">01</div>
+        <h3><em>Tell</em> Astra</h3>
+        <p>Tell her about a trip — already booked, thinking about booking, or somewhere you'd love to go. A destination, rough dates, a budget. That's all she needs to get started.</p>
+      </div>
+      <div class="step">
+        <div class="step-glow" style="background:var(--aurora);"></div>
+        <div class="step-num">02</div>
+        <h3>She <em>watches</em></h3>
+        <p>Astra checks flights, seats, hotels, cars, nearby airports, and flexible dates around the clock — far more frequently than you'd remember to check yourself.</p>
+      </div>
+      <div class="step">
+        <div class="step-glow" style="background:var(--save);"></div>
+        <div class="step-num">03</div>
+        <h3>You <em>act</em></h3>
+        <p>When Astra finds something worth your attention, she texts you — explaining exactly what changed, what it means, and what to do next. Simple. Specific. Human.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- WHAT ASTRA WATCHES -->
+<section class="sp" id="watches">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sec-lbl"><span class="sl-dot"></span>What Astra watches</div>
+      <h2 class="sec-title">Everything you'd<br>forget to <em>check.</em></h2>
+    </div>
+    <div class="watch-grid reveal d1">
+      <div class="wc wide">
+        <span class="wc-icon">✦</span>
+        <h3>Astra watches. <em>You live your life.</em></h3>
+        <p>Most people search for flights, find a price, then spend three weeks wondering if they should have booked it. Astra ends this. Brief her once — she monitors continuously and surfaces the moment that matters, not just the price.</p>
+        <div class="wc-tag"><span class="wt-dot"></span>Checking every 15 minutes</div>
+        <div class="wc-glow" style="background:var(--astra);"></div>
+      </div>
+      <div class="wc">
+        <span class="wc-icon">✈️</span>
+        <h3><em>Flights</em></h3>
+        <p>Price drops on your route, cheaper nearby dates, better connections, alternate airports — all surfaced the moment they appear. Not once a day. Continuously.</p>
+      </div>
+      <div class="wc">
+        <span class="wc-icon">💺</span>
+        <h3><em>Seats</em></h3>
+        <p>Astra learns your seating preferences and alerts you when a preferred seat opens — aisle, extra legroom, exit row — not just when the fare drops.</p>
+      </div>
+      <div class="wc">
+        <span class="wc-icon">🏨</span>
+        <h3><em>Hotels</em></h3>
+        <p>Rate drops on properties you're watching, room upgrades at the same price, better-rated alternatives that just came available in your window.</p>
+      </div>
+      <div class="wc">
+        <span class="wc-icon">🚗</span>
+        <h3><em>Cars & Dates</em></h3>
+        <p>Rental price drops, flexible date combinations that cut costs, and nearby airport options — things you'd only find by searching a dozen times yourself.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- MAYBE SECTION -->
+<section class="maybe-sec">
+  <div class="wrap">
+    <div class="maybe-inner">
+      <div class="maybe-list reveal">
+        <div style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:24px;transition:color .4s;">Maybe it's…</div>
+        <div class="mi"><div class="mi-num">01</div><div class="mi-text">A cheaper flight <em>you almost didn't check</em></div></div>
+        <div class="mi"><div class="mi-num">02</div><div class="mi-text">A better seat <em>that just came free</em></div></div>
+        <div class="mi"><div class="mi-num">03</div><div class="mi-text">A nicer hotel <em>for the same money</em></div></div>
+        <div class="mi"><div class="mi-num">04</div><div class="mi-text">A better date <em>that saves you $200</em></div></div>
+        <div class="mi"><div class="mi-num">05</div><div class="mi-text">A car deal <em>you would have missed</em></div></div>
+      </div>
+      <div class="reveal d2">
+        <div class="cta-block">
+          <div class="cb-mark">★</div>
+          <h3 class="cb-title">Ask <em>Astra.</em></h3>
+          <p class="cb-body">Already booked a trip? Looking at flights? Wondering if there's a better hotel, seat, date, airport, or car deal?<br><br>
+          Tell Astra what you're planning and she'll keep checking in the background. When she finds something better, she tells you — explaining exactly <strong>what changed and why it may be worth acting on.</strong></p>
+          <a href="#" class="btn-primary" style="display:inline-flex;"><div class="btn-star">★</div>Just ask Astra and see what she can dig up</a>
+          <p style="font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);margin-top:14px;letter-spacing:.08em;transition:color .4s;">No risk. No pressure. Free to start.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALERTS -->
+<section class="alert-sec" id="alerts">
+  <div class="wrap">
+    <div class="alert-inner">
+      <div class="reveal">
+        <div class="sec-lbl"><span class="sl-dot"></span>The alert experience</div>
+        <h2 class="sec-title">A text from someone<br>who was <em>watching.</em></h2>
+        <p class="sec-body" style="margin-bottom:32px;">Astra doesn't fire off generic notifications. She texts you like a knowledgeable friend who spotted something — with the number, the context, and the reason it matters to you specifically.</p>
+        <div class="alert-principles">
+          <div class="ap">
+            <div class="ap-num">01</div>
+            <div><div class="ap-title">Specific numbers, always</div><div class="ap-body">"$238 below average" beats "prices have dropped." The number is the news — lead with it every time.</div></div>
+          </div>
+          <div class="ap">
+            <div class="ap-num">02</div>
+            <div><div class="ap-title">Your goal, referenced back</div><div class="ap-body">"Your target was $520. This is your moment." Proves Astra was listening the whole time.</div></div>
+          </div>
+          <div class="ap">
+            <div class="ap-num">03</div>
+            <div><div class="ap-title">Honest urgency — never manufactured</div><div class="ap-body">"These fares typically hold 2–4 hours" — true, verifiable, from real data. No fake countdown timers.</div></div>
+          </div>
+          <div class="ap">
+            <div class="ap-num">04</div>
+            <div><div class="ap-title">Act or defer. Nothing else.</div><div class="ap-body">Book now, or snooze an hour. Two options. Every extra choice halves the chance of any action at all.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="alert-device reveal d2">
+        <div style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:14px;transition:color .4s;">SMS from Astra</div>
+        <div class="sms-card">
+          <div class="sms-from">Astra · SlickTrip</div>
+          <div class="sms-text">Your <span class="r">JFK → London</span> just dropped to <span class="p">$489</span> — that's <span class="s">$238 below average</span> and the cheapest I've seen in 90 days. <span class="d">Your target was $520.</span><br><br>These fares typically hold for 2–4 hours. <span class="u">This is your window.</span></div>
+          <div class="sms-actions">
+            <div class="sms-btn book">Book now →</div>
+            <div class="sms-btn snooze">Snooze 1hr</div>
+          </div>
+        </div>
+        <div style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin:20px 0 14px;transition:color .4s;">Push notification</div>
+        <div class="push-card">
+          <div class="push-icon">★</div>
+          <div>
+            <div class="pb-app">Astra · SlickTrip</div>
+            <div class="pb-title">Tokyo just dropped $208</div>
+            <div class="pb-msg">JFK → TYO · Oct 9–18 · Now <span class="pb-save">$541</span>. Cheapest this autumn. 4 seats at this price.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- PRICING -->
+<section class="pricing-sec" id="pricing">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:560px;margin:0 auto;">
+      <div class="sec-lbl" style="justify-content:center;"><span class="sl-dot"></span>Pricing</div>
+      <h2 class="sec-title">Free gets you <em>Astra.</em><br>Premium makes her unstoppable.</h2>
+      <p class="sec-body" style="margin:0 auto;">Start free — no card required. Upgrade when Astra's saved you enough to make it obvious.</p>
+    </div>
+    <div class="pricing-grid reveal d1">
+      <div class="pc">
+        <div class="pc-tier">Explorer · Free</div>
+        <div class="pc-price"><sup></sup>$0</div>
+        <div class="pc-cadence">forever free · no card needed</div>
+        <ul>
+          <li>Track up to 5 routes</li>
+          <li>Daily SMS + email alerts</li>
+          <li>Colour-coded price calendar</li>
+          <li>Bucket List — 5 destinations</li>
+          <li>Ask Astra — basic</li>
+          <li>Home airport deal feed</li>
+          <li>Book now / wait verdict</li>
+        </ul>
+      </div>
+      <div class="pc featured">
+        <div class="pop-badge">Most popular</div>
+        <div class="pc-tier">Flyer · Premium</div>
+        <div class="pc-price"><sup>$</sup>9</div>
+        <div class="pc-cadence">per month · cancel anytime</div>
+        <ul>
+          <li>Unlimited route tracking</li>
+          <li>Near-real-time alerts every 15 min</li>
+          <li>Fare Personality Score — all routes</li>
+          <li>AI Seat Scout on saved flights</li>
+          <li>Calendar Flex Finder</li>
+          <li>Mistake fare priority access</li>
+          <li>Disruption Predictor</li>
+          <li>Group Sync — up to 6 travellers</li>
+          <li>Post-booking Companion Mode</li>
+          <li>Full Ask Astra conversational access</li>
+        </ul>
+      </div>
+      <div class="pc">
+        <div class="pc-tier">Nomad · Elite</div>
+        <div class="pc-price"><sup>$</sup>19</div>
+        <div class="pc-cadence">per month · annual billing</div>
+        <ul>
+          <li>Everything in Premium</li>
+          <li>First Class &amp; private deals</li>
+          <li>Astra Concierge Mode</li>
+          <li>Trip Mood Engine — full access</li>
+          <li>Price Freeze — lock for 6 hours</li>
+          <li>Priority SMS under 5 minutes</li>
+          <li>Multi-city auto-optimiser</li>
+          <li>Early access to new features</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-sec" id="cta">
+  <div class="cta-neb"></div>
+  <div class="wrap" style="position:relative;z-index:1;">
+    <div class="reveal">
+      <div class="cta-lbl">The only question left</div>
+      <h2 class="cta-h">What's Astra<br>watching for <em>you?</em></h2>
+      <p class="cta-p">Just ask Astra and see what she can dig up. No risk. No pressure. No need to keep looking yourself.</p>
+      <div class="cta-row">
+        <a href="#" class="btn-primary" style="font-size:15px;padding:16px 32px;"><div class="btn-star" style="width:20px;height:20px;font-size:10px;">★</div>Ask Astra about your trip</a>
+        <a href="#pricing" class="btn-ghost" style="font-size:15px;padding:16px 32px;">View pricing ↑</a>
+      </div>
+      <p class="cta-small">Free to start · No credit card · SMS + email alerts</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <img class="nav-logo-img dark-logo" src="AstraLogoWhite.png" alt="Astra" style="height:28px;">
+          <img class="nav-logo-img light-logo" src="AstraLogoDark.png" alt="Astra" style="height:28px;">
+        </div>
+        <div class="fb-tag">She keeps looking for you.</div>
+        <div style="font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:.08em;transition:color .4s;">by SlickTrip</div>
+      </div>
+      <div class="fc">
+        <h4>Product</h4>
+        <a href="#">How it works</a>
+        <a href="#">What Astra watches</a>
+        <a href="#">Alerts</a>
+        <a href="#">Pricing</a>
+        <a href="#">Download app</a>
+      </div>
+      <div class="fc">
+        <h4>Company</h4>
+        <a href="#">About SlickTrip</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="fc">
+        <h4>Legal</h4>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">SMS policy</a>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© 2026 SlickTrip LLC. All rights reserved.</span>
+      <span>Astra watches so you don't have to.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* THEME */
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('ttThumb').textContent = isDark ? '🌙' : '☀️';
+  try{ localStorage.setItem('astra-theme', isDark ? 'light' : 'dark'); }catch(e){}
+}
+try{
+  const saved = localStorage.getItem('astra-theme');
+  if(saved){
+    document.documentElement.setAttribute('data-theme', saved);
+    const t = document.getElementById('ttThumb');
+    if(t) t.textContent = saved === 'light' ? '🌙' : '☀️';
+  }
+}catch(e){}
+
+/* MOBILE NAV */
+function toggleMenu(){
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+
+/* SCROLL REVEAL */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+},{ threshold:0.08, rootMargin:'0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* NAV SHADOW ON SCROLL */
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').style.boxShadow =
+    window.scrollY > 10 ? '0 2px 24px rgba(0,0,0,0.15)' : 'none';
+},{ passive:true });
+
+/* TYPING ANIMATION */
+const el = document.getElementById('typingTarget');
+const phrases = [
+  'Ask Astra about your trip…',
+  '"Is now the right time to book?"',
+  '"Find me something warm in October"',
+  '"Watch my London flights"',
+  '"Is there a better hotel for the same price?"',
+  '"Will prices drop before August?"',
+];
+let pi=0,ci=0,del=false;
+function type(){
+  const ph=phrases[pi];
+  if(!del){ ci++; if(el) el.textContent=ph.slice(0,ci); if(ci===ph.length){del=true;setTimeout(type,2400);return;} setTimeout(type,55); }
+  else { ci--; if(el) el.textContent=ph.slice(0,ci); if(ci===0){del=false;pi=(pi+1)%phrases.length;setTimeout(type,400);return;} setTimeout(type,28); }
+}
+setTimeout(type,1400);
+</script>
+</body>
+</html>

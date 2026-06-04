@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astra by SlickTrip — UX Vision 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --void:      #07080c;
+  --deep:      #0c0e16;
+  --surface:   #111420;
+  --raised:    #161a28;
+  --border:    rgba(255,255,255,0.06);
+  --border2:   rgba(255,255,255,0.11);
+
+  --text:      #eeeef2;
+  --text2:     #7e8499;
+  --text3:     #3d4259;
+
+  /* Astra palette — celestial, feminine, authoritative */
+  --astra:     #c8b8ff;   /* soft violet — Astra's signature */
+  --astra2:    #9b7cf4;   /* deeper violet */
+  --astra3:    #6b4fd4;   /* anchor violet */
+  --aurora:    #7fdcff;   /* sky blue — flight */
+  --dawn:      #ffb085;   /* warm amber — deals/alerts */
+  --star:      #ffe082;   /* gold — premium */
+  --save:      #6effc4;   /* mint — savings */
+  --risk:      #ff7e7e;   /* rose — urgent */
+
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'Geist', sans-serif;
+  --font-mono:  'Geist Mono', monospace;
+
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+  --ease-silk:   cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:var(--font-sans);
+  font-size:15px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* star-field */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(200,184,255,0.35) 0%, transparent 0%),
+    radial-gradient(1px 1px at 72% 8%,  rgba(127,220,255,0.3) 0%, transparent 0%),
+    radial-gradient(1.5px 1.5px at 40% 55%, rgba(200,184,255,0.2) 0%, transparent 0%),
+    radial-gradient(1px 1px at 88% 42%, rgba(255,224,130,0.25) 0%, transparent 0%),
+    radial-gradient(1px 1px at 25% 78%, rgba(127,220,255,0.2) 0%, transparent 0%),
+    radial-gradient(1px 1px at 60% 90%, rgba(200,184,255,0.15) 0%, transparent 0%),
+    radial-gradient(1px 1px at 5%  60%, rgba(255,224,130,0.2)  0%, transparent 0%),
+    radial-gradient(1px 1px at 93% 72%, rgba(110,255,196,0.2)  0%, transparent 0%);
+  pointer-events:none;z-index:0;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.wrap{max-width:1180px;margin:0 auto;padding:0 36px;position:relative;z-index:1;}
+.section{padding:88px 0;position:relative;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:0;}
+
+/* ═══════════════════════════════════════════
+   TYPE UTILITIES
+═══════════════════════════════════════════ */
+.eyebrow{
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:10px;
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow .ew-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--astra);flex-shrink:0;
+}
+.eyebrow.aurora .ew-dot{background:var(--aurora);}
+.eyebrow.dawn   .ew-dot{background:var(--dawn);}
+.eyebrow.save   .ew-dot{background:var(--save);}
+
+h1,h2,h3{font-family:var(--font-serif);font-weight:400;letter-spacing:-0.01em;}
+.display{
+  font-family:var(--font-serif);
+  font-size:clamp(56px,9vw,120px);
+  line-height:0.95;
+  font-weight:300;
+  letter-spacing:-0.03em;
+}
+.display em{font-style:italic;color:var(--astra);}
+
+.title-lg{
+  font-family:var(--font-serif);
+  font-size:clamp(32px,5vw,56px);
+  line-height:1.05;
+  font-weight:300;
+}
+.title-lg em{font-style:italic;color:var(--astra);}
+.title-lg strong{font-weight:500;}
+
+.title-md{
+  font-family:var(--font-serif);
+  font-size:clamp(22px,3vw,32px);
+  font-weight:400;line-height:1.15;
+}
+
+.lead{
+  font-size:17px;color:var(--text2);
+  line-height:1.75;max-width:600px;
+}
+
+.mono{font-family:var(--font-mono);}
+
+/* ═══════════════════════════════════════════
+   ASTRA LOGO / WORDMARK
+═══════════════════════════════════════════ */
+.astra-logo{
+  display:inline-flex;align-items:center;gap:10px;
+}
+.astra-mark{
+  width:32px;height:32px;
+  border-radius:50%;
+  background:conic-gradient(from 200deg, var(--astra3), var(--astra), var(--aurora), var(--astra3));
+  position:relative;
+  flex-shrink:0;
+  animation:rotate-slow 8s linear infinite;
+  box-shadow:0 0 20px rgba(200,184,255,0.3);
+}
+.astra-mark::after{
+  content:'★';
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:white;
+}
+@keyframes rotate-slow{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+.astra-wordmark{
+  font-family:var(--font-serif);
+  font-size:20px;font-weight:400;
+  letter-spacing:0.04em;
+  color:var(--text);
+}
+.astra-wordmark span{
+  color:var(--text3);font-size:12px;
+  font-family:var(--font-mono);
+  letter-spacing:0.14em;text-transform:uppercase;
+  display:block;margin-top:-3px;
+}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:16px 36px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(7,8,12,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-links{
+  display:flex;gap:28px;
+}
+.nav-links a{
+  font-size:12px;font-family:var(--font-mono);
+  color:var(--text3);text-decoration:none;
+  letter-spacing:0.12em;text-transform:uppercase;
+  transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--astra);}
+.nav-cta{
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--astra);border:1px solid rgba(200,184,255,0.3);
+  padding:8px 18px;border-radius:100px;
+  text-decoration:none;
+  transition:background 0.2s,border-color 0.2s;
+}
+.nav-cta:hover{background:rgba(200,184,255,0.08);border-color:var(--astra);}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:120px 0 80px;
+  overflow:hidden;position:relative;
+}
+
+/* Nebula glow */
+.hero::before{
+  content:'';
+  position:absolute;
+  width:700px;height:700px;
+  border-radius:50%;
+  background:radial-gradient(ellipse, rgba(107,79,212,0.12) 0%, transparent 70%);
+  top:-200px;right:-150px;
+  pointer-events:none;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  width:400px;height:400px;
+  border-radius:50%;
+  background:radial-gradient(ellipse, rgba(127,220,255,0.07) 0%, transparent 70%);
+  bottom:0;left:-100px;
+  pointer-events:none;
+}
+
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:10px;
+  margin-bottom:32px;
+}
+.hero-kicker .k-line{width:32px;height:1px;background:var(--astra);opacity:0.4;}
+.hero-kicker span{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--astra);letter-spacing:0.2em;text-transform:uppercase;
+}
+
+.hero-sub{
+  font-size:18px;color:var(--text2);
+  max-width:540px;line-height:1.7;
+  margin:28px 0 48px;
+}
+
+.hero-cta-row{
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap;
+}
+
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg, var(--astra3), var(--astra2));
+  color:white;border:none;border-radius:100px;
+  padding:14px 28px;font-family:var(--font-sans);
+  font-size:14px;font-weight:500;cursor:pointer;
+  box-shadow:0 8px 32px rgba(107,79,212,0.3);
+  text-decoration:none;transition:transform 0.2s var(--ease-spring), box-shadow 0.2s;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(107,79,212,0.4);}
+
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--text2);border:1px solid var(--border2);
+  border-radius:100px;padding:14px 28px;
+  font-family:var(--font-sans);font-size:14px;
+  text-decoration:none;transition:color 0.2s,border-color 0.2s;
+}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
+
+/* ═══════════════════════════════════════════
+   ASTRA BRAND STATEMENT — INTERACTIVE TABS
+═══════════════════════════════════════════ */
+.voice-tabs{
+  display:flex;gap:2px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:100px;
+  padding:4px;
+  width:fit-content;
+  margin-bottom:32px;
+}
+.voice-tab{
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text3);padding:8px 20px;
+  border-radius:100px;cursor:pointer;
+  transition:all 0.2s var(--ease-silk);
+  border:none;background:none;
+}
+.voice-tab.active{
+  background:var(--raised);
+  color:var(--astra);
+  box-shadow:0 2px 12px rgba(0,0,0,0.3);
+}
+
+.voice-panel{display:none;}
+.voice-panel.active{display:block;}
+
+.voice-copy{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--astra);
+  border-radius:0 var(--radius-lg,16px) var(--radius-lg,16px) 0;
+  padding:36px 40px;
+  max-width:760px;
+  position:relative;
+  transition:all 0.3s var(--ease-silk);
+  animation:fadeSlide 0.3s var(--ease-silk);
+}
+@keyframes fadeSlide{
+  from{opacity:0;transform:translateX(-8px);}
+  to{opacity:1;transform:translateX(0);}
+}
+
+.voice-copy .vc-label{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--astra);margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.voice-copy .vc-label::after{
+  content:'';flex:1;height:1px;
+  background:rgba(200,184,255,0.15);
+}
+
+.voice-copy .vc-headline{
+  font-family:var(--font-serif);
+  font-size:clamp(22px,3vw,30px);
+  font-weight:400;line-height:1.2;
+  margin-bottom:16px;
+  color:var(--text);
+}
+.voice-copy .vc-headline em{font-style:italic;color:var(--astra);}
+
+.voice-copy .vc-body{
+  font-size:15px;color:var(--text2);
+  line-height:1.8;margin-bottom:20px;
+}
+.voice-copy .vc-body strong{color:var(--text);font-weight:500;}
+
+.voice-copy .vc-tagline{
+  font-family:var(--font-serif);
+  font-size:18px;font-style:italic;
+  color:var(--astra);margin-top:12px;
+}
+
+.voice-copy .vc-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,184,255,0.08);
+  border:1px solid rgba(200,184,255,0.2);
+  border-radius:100px;padding:10px 22px;
+  font-family:var(--font-sans);font-size:13px;
+  color:var(--astra);margin-top:20px;cursor:pointer;
+  transition:background 0.2s;
+}
+.voice-copy .vc-cta:hover{background:rgba(200,184,255,0.14);}
+
+.our-rec-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(110,255,196,0.1);
+  border:1px solid rgba(110,255,196,0.25);
+  border-radius:100px;padding:4px 12px;
+  font-family:var(--font-mono);font-size:9px;
+  color:var(--save);letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:12px;
+}
+
+/* ═══════════════════════════════════════════
+   ASTRA BRAND IDENTITY SYSTEM
+═══════════════════════════════════════════ */
+.brand-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:2px;
+  background:var(--border);
+  border-radius:20px;overflow:hidden;
+  margin-bottom:48px;
+}
+.brand-cell{
+  background:var(--surface);padding:32px 28px;
+  transition:background 0.2s;
+}
+.brand-cell:hover{background:var(--raised);}
+.brand-cell .bc-label{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:14px;
+}
+.brand-cell h3{
+  font-family:var(--font-serif);font-size:22px;
+  font-weight:400;margin-bottom:8px;
+}
+.brand-cell p{font-size:13px;color:var(--text2);line-height:1.6;}
+
+/* Colour swatches */
+.swatch-row{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap;}
+.swatch{
+  height:28px;flex:1;min-width:32px;
+  border-radius:6px;position:relative;
+  cursor:default;
+}
+.swatch::after{
+  content:attr(data-name);
+  position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
+  font-family:var(--font-mono);font-size:8px;
+  color:var(--text3);white-space:nowrap;letter-spacing:0.05em;
+}
+
+/* Typography specimen */
+.type-spec{margin-top:12px;}
+.type-spec .ts-row{
+  padding:10px 0;border-bottom:1px solid var(--border);
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:16px;
+}
+.type-spec .ts-row:last-child{border-bottom:none;}
+.type-spec .ts-name{
+  font-family:var(--font-mono);font-size:9px;
+  color:var(--text3);letter-spacing:0.12em;white-space:nowrap;
+}
+
+/* ═══════════════════════════════════════════
+   PHONE MOCKUP SYSTEM
+═══════════════════════════════════════════ */
+.phone{
+  background:var(--surface);
+  border:2px solid var(--border2);
+  border-radius:48px;padding:14px;
+  max-width:300px;margin:0 auto;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.6),
+    0 50px 100px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  position:relative;
+}
+.phone::before{
+  content:'';
+  position:absolute;
+  top:-1px;left:50%;transform:translateX(-50%);
+  width:80px;height:24px;
+  background:var(--deep);
+  border-radius:0 0 14px 14px;
+  z-index:10;
+}
+.phone-inner{
+  border-radius:36px;overflow:hidden;
+  background:var(--deep);
+  min-height:580px;
+  position:relative;
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN: ASTRA ENTRY / CONVERSATIONAL
+═══════════════════════════════════════════ */
+.astra-screen{
+  background:linear-gradient(160deg, #0d0f18 0%, #090a10 100%);
+  height:100%;min-height:600px;
+  display:flex;flex-direction:column;
+  padding:0;
+  position:relative;overflow:hidden;
+}
+
+/* nebula inside phone */
+.astra-screen::before{
+  content:'';position:absolute;
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(ellipse, rgba(107,79,212,0.18) 0%, transparent 70%);
+  top:-60px;right:-60px;pointer-events:none;
+}
+
+.as-status{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 20px 8px;font-family:var(--font-mono);font-size:12px;
+  position:relative;z-index:1;
+}
+
+.as-header{
+  padding:10px 20px 16px;
+  border-bottom:1px solid var(--border);
+  position:relative;z-index:1;
+}
+.as-logo{
+  display:flex;align-items:center;gap:8px;
+}
+.as-mark{
+  width:22px;height:22px;border-radius:50%;
+  background:conic-gradient(from 200deg, var(--astra3), var(--astra), var(--aurora), var(--astra3));
+  animation:rotate-slow 8s linear infinite;
+  box-shadow:0 0 10px rgba(200,184,255,0.4);
+  flex-shrink:0;
+}
+.as-name{
+  font-family:var(--font-serif);font-size:14px;font-weight:400;
+  letter-spacing:0.05em;
+}
+.as-tag{
+  font-family:var(--font-mono);font-size:8px;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text3);margin-left:auto;
+}
+
+/* Astra chat area */
+.as-chat{
+  flex:1;padding:16px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;z-index:1;
+}
+
+.as-bubble{
+  max-width:85%;padding:11px 14px;
+  border-radius:16px 16px 16px 4px;
+  font-size:12px;line-height:1.55;
+}
+.as-bubble.astra{
+  background:rgba(107,79,212,0.15);
+  border:1px solid rgba(200,184,255,0.12);
+  color:var(--text);align-self:flex-start;
+}
+.as-bubble.user{
+  background:var(--raised);
+  border:1px solid var(--border2);
+  color:var(--text2);
+  align-self:flex-end;
+  border-radius:16px 16px 4px 16px;
+  font-style:italic;
+}
+
+.as-bubble .ab-label{
+  font-family:var(--font-mono);font-size:8px;
+  letter-spacing:0.12em;color:var(--astra);
+  text-transform:uppercase;margin-bottom:5px;
+}
+.as-bubble .ab-highlight{color:var(--save);font-weight:500;}
+.as-bubble .ab-alert{color:var(--dawn);font-weight:500;}
+.as-bubble .ab-link{
+  display:inline-block;margin-top:8px;
+  background:rgba(200,184,255,0.12);
+  border:1px solid rgba(200,184,255,0.2);
+  border-radius:8px;padding:6px 12px;
+  font-family:var(--font-mono);font-size:9px;
+  color:var(--astra);letter-spacing:0.08em;
+  text-transform:uppercase;cursor:pointer;
+}
+
+/* Astra input */
+.as-input-row{
+  padding:12px 14px 20px;
+  border-top:1px solid var(--border);
+  position:relative;z-index:1;
+}
+.as-input{
+  background:var(--raised);
+  border:1px solid var(--border2);
+  border-radius:100px;
+  padding:11px 14px 11px 16px;
+  display:flex;align-items:center;gap:8px;
+}
+.as-input .ai-text{
+  flex:1;font-size:11px;color:var(--text3);
+  font-style:italic;
+}
+.as-send{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg, var(--astra3), var(--astra2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(107,79,212,0.3);
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN: HOME FEED
+═══════════════════════════════════════════ */
+.home-screen{
+  background:var(--deep);
+  min-height:600px;display:flex;flex-direction:column;
+}
+
+.hs-greeting{
+  padding:14px 18px 10px;
+}
+.hs-greeting .hs-time{
+  font-family:var(--font-mono);font-size:11px;color:var(--text3);
+  margin-bottom:4px;
+}
+.hs-greeting .hs-head{
+  font-family:var(--font-serif);font-size:22px;font-weight:400;
+  line-height:1.1;
+}
+.hs-greeting .hs-head em{font-style:italic;color:var(--astra);}
+
+/* Astra summary card */
+.astra-card{
+  margin:8px 14px;
+  background:linear-gradient(135deg, rgba(107,79,212,0.1), rgba(127,220,255,0.05));
+  border:1px solid rgba(200,184,255,0.14);
+  border-radius:14px;padding:12px 14px;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.ac-mark{
+  width:26px;height:26px;border-radius:50%;
+  background:conic-gradient(from 200deg, var(--astra3), var(--astra), var(--aurora), var(--astra3));
+  animation:rotate-slow 8s linear infinite;
+  flex-shrink:0;
+  box-shadow:0 0 10px rgba(200,184,255,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:white;
+}
+.ac-body{flex:1;}
+.ac-label{
+  font-family:var(--font-mono);font-size:8px;
+  letter-spacing:0.15em;color:var(--astra);
+  text-transform:uppercase;margin-bottom:4px;
+}
+.ac-text{font-size:11px;color:var(--text);line-height:1.5;}
+.ac-text .save{color:var(--save);font-weight:500;}
+.ac-text .alert-hi{color:var(--dawn);font-weight:500;}
+
+/* Deal cards */
+.hs-section-label{
+  padding:10px 16px 6px;
+  font-family:var(--font-mono);font-size:8px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--text3);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.hs-section-label span{color:var(--astra);font-size:8px;}
+
+.deal-scroll{
+  display:flex;gap:8px;
+  padding:0 14px 2px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.deal-scroll::-webkit-scrollbar{display:none;}
+
+.dc{
+  flex-shrink:0;width:130px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+}
+.dc-img{
+  height:68px;display:flex;align-items:center;
+  justify-content:center;font-size:28px;
+  position:relative;
+}
+.dc-img.tokyo{background:linear-gradient(135deg,#1a2340,#0d1528);}
+.dc-img.lisbon{background:linear-gradient(135deg,#2a1a0a,#170e05);}
+.dc-img.miami{background:linear-gradient(135deg,#0a1e2a,#051018);}
+.dc-badge{
+  position:absolute;top:5px;right:5px;
+  font-family:var(--font-mono);font-size:7px;
+  padding:2px 5px;border-radius:4px;font-weight:600;
+}
+.dc-badge.low{background:rgba(110,255,196,0.25);color:var(--save);}
+.dc-badge.hot{background:rgba(255,176,133,0.25);color:var(--dawn);}
+.dc-body{padding:8px 10px 10px;}
+.dc-city{
+  font-family:var(--font-serif);font-size:13px;
+  font-weight:400;margin-bottom:2px;
+}
+.dc-price{font-size:10px;color:var(--text3);}
+.dc-price .p{color:var(--save);font-family:var(--font-mono);font-size:12px;font-weight:500;}
+
+/* price cal mini */
+.hs-cal{
+  margin:8px 14px 0;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:11px 12px;
+}
+.cal-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:8px;
+}
+.cal-route{font-family:var(--font-serif);font-size:12px;font-weight:400;}
+.cal-month{font-family:var(--font-mono);font-size:8px;color:var(--text3);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cd{
+  aspect-ratio:1;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:8px;cursor:pointer;
+  transition:transform 0.15s;
+}
+.cd:hover{transform:scale(1.2);}
+.cd.cheap{background:rgba(110,255,196,0.18);color:var(--save);}
+.cd.mid{background:rgba(255,176,133,0.15);color:var(--dawn);}
+.cd.dear{background:rgba(255,126,126,0.15);color:var(--risk);}
+.cd.empty{color:var(--text3);opacity:0.35;}
+.cd.sel{outline:2px solid var(--astra);outline-offset:1px;color:var(--astra);}
+
+/* bottom nav */
+.bottom-nav{
+  margin-top:auto;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-around;
+  padding:10px 0 18px;
+}
+.bn-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-family:var(--font-mono);font-size:7px;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text3);cursor:pointer;
+}
+.bn-item.active{color:var(--astra);}
+.bn-icon{font-size:18px;line-height:1;}
+.bn-item.active .bn-icon{
+  filter:drop-shadow(0 0 6px rgba(200,184,255,0.6));
+}
+.bn-fab{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg, var(--astra3), var(--astra2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-top:-10px;
+  box-shadow:0 4px 20px rgba(107,79,212,0.45);
+  cursor:pointer;
+}
+
+/* ═══════════════════════════════════════════
+   FEATURE SPLIT LAYOUT
+═══════════════════════════════════════════ */
+.split{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:center;
+}
+.split.flip{direction:rtl;}
+.split.flip > *{direction:ltr;}
+
+.feat-desc{padding-top:8px;}
+.feat-desc .fd-label{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--astra);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.feat-desc .fd-label::after{
+  content:'';flex:1;max-width:32px;
+  height:1px;background:rgba(200,184,255,0.3);
+}
+.feat-desc h3.feat-title{
+  font-family:var(--font-serif);
+  font-size:clamp(24px,3.5vw,38px);
+  font-weight:300;line-height:1.1;
+  margin-bottom:16px;
+}
+.feat-desc h3.feat-title em{font-style:italic;color:var(--astra);}
+.feat-desc .feat-body{
+  font-size:14px;color:var(--text2);
+  line-height:1.75;margin-bottom:24px;
+  max-width:480px;
+}
+
+.feat-points{display:flex;flex-direction:column;gap:10px;}
+.feat-point{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  transition:border-color 0.2s;
+}
+.feat-point:hover{border-color:rgba(200,184,255,0.2);}
+.fp-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:var(--raised);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.fp-body h4{
+  font-family:var(--font-sans);font-size:13px;
+  font-weight:600;margin-bottom:2px;color:var(--text);
+}
+.fp-body p{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* ═══════════════════════════════════════════
+   ALERT DESIGN
+═══════════════════════════════════════════ */
+.alert-showcase{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+  align-items:start;
+}
+
+.sms-bubble{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px 18px 18px 6px;
+  padding:18px 20px;
+  position:relative;
+  max-width:380px;
+}
+.sms-bubble .sb-from{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--astra);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.sms-bubble .sb-from::before{
+  content:'';width:6px;height:6px;
+  border-radius:50%;background:var(--astra);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+.sms-bubble .sb-text{
+  font-size:14px;color:var(--text);line-height:1.7;
+}
+.sms-bubble .sb-text .route{color:var(--aurora);font-weight:600;}
+.sms-bubble .sb-text .price{color:var(--save);font-family:var(--font-mono);font-weight:500;}
+.sms-bubble .sb-text .saving{color:var(--dawn);font-weight:600;}
+.sms-bubble .sb-text .context{color:var(--text2);}
+.sms-bubble .sb-text .urgency{color:var(--astra);}
+
+.sms-actions{display:flex;gap:8px;margin-top:14px;}
+.sms-btn{
+  flex:1;padding:9px;border-radius:9px;
+  text-align:center;font-size:12px;
+  font-family:var(--font-mono);cursor:pointer;
+  transition:opacity 0.15s;
+}
+.sms-btn:hover{opacity:0.85;}
+.sms-btn.book{
+  background:linear-gradient(135deg,var(--save),#3ed49b);
+  color:var(--void);font-weight:600;
+}
+.sms-btn.snooze{
+  background:var(--raised);border:1px solid var(--border2);
+  color:var(--text3);
+}
+
+.push-card{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:14px;padding:14px;
+  display:flex;gap:11px;
+  max-width:340px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.5);
+}
+.push-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--astra3),var(--astra2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.push-body .pb-app{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:3px;
+}
+.push-body .pb-title{
+  font-family:var(--font-serif);font-size:15px;
+  font-weight:400;margin-bottom:3px;color:var(--text);
+}
+.push-body .pb-msg{
+  font-size:11px;color:var(--text2);line-height:1.45;
+}
+.push-body .pb-save{
+  color:var(--save);font-family:var(--font-mono);font-weight:500;
+}
+
+.alert-principles{
+  display:flex;flex-direction:column;gap:12px;
+}
+.ap{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px;border-left:2px solid var(--border2);
+  transition:border-color 0.2s;
+}
+.ap:hover{border-color:var(--astra);}
+.ap .ap-num{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--astra);flex-shrink:0;padding-top:2px;
+}
+.ap .ap-title{
+  font-size:13px;font-weight:600;margin-bottom:3px;
+}
+.ap .ap-body{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* ═══════════════════════════════════════════
+   AI FEATURES MASONRY
+═══════════════════════════════════════════ */
+.ai-masonry{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:2px;background:var(--border);
+  border-radius:20px;overflow:hidden;
+}
+.aic{
+  background:var(--surface);padding:30px 26px;
+  transition:background 0.2s;
+  position:relative;overflow:hidden;
+}
+.aic:hover{background:var(--raised);}
+.aic.span2{grid-column:span 2;}
+.aic.span3{grid-column:span 3;}
+
+.aic .ai-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(200,184,255,0.08);
+  border:1px solid rgba(200,184,255,0.15);
+  border-radius:100px;padding:3px 10px;
+  margin-bottom:14px;
+}
+.aic .ai-chip .acd{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--astra);animation:pulse 2s infinite;
+}
+.aic .ai-chip span{
+  font-family:var(--font-mono);font-size:8px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--astra);
+}
+.aic h3{
+  font-family:var(--font-serif);font-size:20px;
+  font-weight:400;margin-bottom:8px;
+}
+.aic.span2 h3{font-size:26px;}
+.aic p{font-size:13px;color:var(--text2);line-height:1.65;}
+
+.aic .ex{
+  margin-top:14px;
+  background:var(--deep);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--text2);line-height:1.6;
+}
+.aic .ex::before{
+  content:'EXAMPLE';display:block;
+  font-size:8px;letter-spacing:0.2em;
+  color:var(--text3);margin-bottom:6px;
+}
+.aic .ex .eh{color:var(--aurora);}
+.aic .ex .es{color:var(--save);}
+.aic .ex .ea{color:var(--dawn);}
+.aic .ex .ep{color:var(--astra);}
+
+.aic .glow{
+  position:absolute;width:180px;height:180px;
+  border-radius:50%;filter:blur(70px);
+  opacity:0.1;bottom:-50px;right:-30px;
+  pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════
+   PRICING
+═══════════════════════════════════════════ */
+.pricing{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:2px;background:var(--border);
+  border-radius:20px;overflow:hidden;
+}
+.pc{
+  background:var(--surface);padding:36px 30px 40px;
+  position:relative;
+}
+.pc.hero-tier{
+  background:linear-gradient(160deg,#131a2e,#0e1422);
+  border-top:2px solid var(--astra);
+}
+.pc .tier{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px;
+}
+.pc.hero-tier .tier{color:var(--astra);}
+.pc .price{
+  font-family:var(--font-serif);font-size:44px;
+  font-weight:300;letter-spacing:-0.03em;
+  color:var(--text);
+}
+.pc .price sup{font-size:20px;vertical-align:super;font-weight:300;}
+.pc .cadence{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--text3);margin-bottom:24px;letter-spacing:0.08em;
+}
+.pc ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.pc ul li{
+  font-size:13px;color:var(--text2);
+  display:flex;align-items:flex-start;gap:8px;
+}
+.pc ul li::before{
+  content:'✦';color:var(--text3);font-size:9px;
+  margin-top:4px;flex-shrink:0;
+}
+.pc.hero-tier ul li::before{color:var(--astra);}
+.pc.hero-tier ul li{color:var(--text);}
+.popular-badge{
+  position:absolute;top:18px;right:18px;
+  background:rgba(200,184,255,0.1);
+  border:1px solid rgba(200,184,255,0.25);
+  border-radius:100px;padding:3px 10px;
+  font-family:var(--font-mono);font-size:8px;
+  color:var(--astra);letter-spacing:0.1em;text-transform:uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   PHASE ROADMAP
+═══════════════════════════════════════════ */
+.roadmap{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:2px;background:var(--border);
+  border-radius:20px;overflow:hidden;
+}
+.rm-phase{
+  background:var(--surface);padding:30px 26px;
+}
+.rm-phase.active{
+  background:linear-gradient(160deg,#121828,#0d1420);
+  border-top:2px solid var(--astra);
+}
+.rm-label{
+  font-family:var(--font-mono);font-size:8px;
+  letter-spacing:0.2em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.rm-phase:nth-child(1) .rm-label{color:var(--save);}
+.rm-phase:nth-child(2) .rm-label{color:var(--astra);}
+.rm-phase:nth-child(3) .rm-label{color:var(--dawn);}
+.rm-title{
+  font-family:var(--font-serif);font-size:20px;
+  font-weight:400;margin-bottom:18px;
+}
+.rm-items{display:flex;flex-direction:column;gap:8px;}
+.rm-item{
+  font-size:12px;color:var(--text2);
+  display:flex;gap:8px;align-items:flex-start;
+}
+.rm-item::before{
+  content:'→';color:var(--text3);flex-shrink:0;
+  font-family:var(--font-mono);
+}
+.rm-phase.active .rm-item{color:var(--text);}
+.rm-phase.active .rm-item::before{color:var(--astra);}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  border-top:1px solid var(--border);
+  padding:48px 36px;
+  display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:20px;
+  position:relative;z-index:1;
+}
+footer .f-brand{
+  font-family:var(--font-serif);font-size:18px;
+  font-weight:400;color:var(--text);
+}
+footer .f-brand em{font-style:italic;color:var(--astra);}
+footer .f-meta{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--text3);letter-spacing:0.1em;
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.fu{animation:fadeUp 0.7s var(--ease-silk) forwards;}
+.d1{animation-delay:0.1s;opacity:0;}
+.d2{animation-delay:0.2s;opacity:0;}
+.d3{animation-delay:0.35s;opacity:0;}
+.d4{animation-delay:0.5s;opacity:0;}
+.d5{animation-delay:0.65s;opacity:0;}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:900px){
+  .split,.alert-showcase,.ai-masonry,
+  .pricing,.roadmap,.brand-grid{grid-template-columns:1fr;}
+  .aic.span2,.aic.span3{grid-column:span 1;}
+  .split.flip{direction:ltr;}
+  nav .nav-links{display:none;}
+  .voice-tabs{flex-wrap:wrap;}
+}
+
+/* scroll-linked section fade */
+.reveal{
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.6s var(--ease-silk), transform 0.6s var(--ease-silk);
+}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="astra-logo">
+    <div class="astra-mark"></div>
+    <div class="astra-wordmark">Astra <span>by SlickTrip</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#brand">Brand Voice</a>
+    <a href="#screens">Screens</a>
+    <a href="#ai">AI Features</a>
+    <a href="#alerts">Alerts</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <a href="#brand" class="nav-cta">View Recommendation ✦</a>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-kicker fu">
+      <span class="k-line"></span>
+      <span>SlickTrip UX Vision · Refined · June 2026</span>
+    </div>
+
+    <h1 class="display fu d1">
+      Meet<br>
+      <em>Astra.</em>
+    </h1>
+
+    <p class="hero-sub fu d2">
+      Your AI travel agent that keeps working after you search. She checks flights, seats, hotels, cars, dates, and prices — 24/7. When she finds something worth your attention, she tells you. Simply.
+    </p>
+
+    <div class="hero-cta-row fu d3">
+      <a href="#brand" class="btn-primary">
+        <span>★</span> Read the Recommendation
+      </a>
+      <a href="#screens" class="btn-ghost">
+        View screen designs ↓
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ BRAND VOICE ═══════ -->
+<section class="section" id="brand">
+  <div class="wrap">
+
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="ew-dot"></span>01 · Brand Voice Synthesis</div>
+      <h2 class="title-lg">
+        Three versions.<br>
+        One <em>recommended</em> direction.
+      </h2>
+      <p class="lead" style="margin-top:14px;">
+        You gave us three voices for Astra — direct, premium, and conversational. Here's our analysis of each, and the synthesis we recommend.
+      </p>
+    </div>
+
+    <!-- TABS -->
+    <div class="voice-tabs reveal" style="margin-top:40px;">
+      <button class="voice-tab active" onclick="switchTab('direct')">Direct</button>
+      <button class="voice-tab" onclick="switchTab('premium')">Premium</button>
+      <button class="voice-tab" onclick="switchTab('conversational')">Conversational</button>
+      <button class="voice-tab" onclick="switchTab('recommended')" style="color:var(--save);border:1px solid rgba(110,255,196,0.2);border-radius:100px;">★ Recommended</button>
+    </div>
+
+    <!-- DIRECT -->
+    <div id="tab-direct" class="voice-panel active">
+      <div class="voice-copy">
+        <div class="vc-label">Direct Version · Analysis</div>
+        <div class="vc-headline">
+          <em>Astra</em> by SlickTrip
+        </div>
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Original Copy</div>
+        <div class="vc-body">
+          "Meet Astra, your SlickTrip AI travel agent. Tell Astra about a trip you've booked, are looking at, or would love to take. Astra keeps checking flights, seats, hotels, cars, dates, airports, and prices in the background. If she finds something better, cheaper, or worth knowing about, she'll text or email you. <strong>No risk. No pressure. No need to keep checking yourself.</strong> Just give Astra a trip and see what she can find."
+        </div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:4px;">
+          <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">UX Assessment</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>Strong triple negative construction ("No risk. No pressure. No need.") — high impact, very shareable</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>The comprehensive list (flights, seats, hotels, cars, dates, airports, prices) signals full coverage without being overwhelming</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>CTA "see what she can find" is brilliant — low commitment, curiosity-led, not pressure-led</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--risk);">—</span>Slightly long for a hero statement. The list in the middle loses pace before the strong triple-negative landing</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--risk);">—</span>"Check" appears twice — minor but tightenable</div>
+          </div>
+        </div>
+        <div class="vc-tagline">"The bones here are exceptional. The triple-negative close is the best line in all three versions."</div>
+      </div>
+    </div>
+
+    <!-- PREMIUM -->
+    <div id="tab-premium" class="voice-panel">
+      <div class="voice-copy" style="border-left-color:var(--star);">
+        <div class="vc-label" style="color:var(--star);">Premium Version · Analysis</div>
+        <div class="vc-headline">
+          <em>Astra</em> by SlickTrip<br>
+          <span style="font-size:0.7em;color:var(--text2);">The AI travel agent that keeps working after you search.</span>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Original Copy</div>
+        <div class="vc-body">
+          "Tell Astra what you've booked, what you're thinking of booking, or where you'd love to go. Astra checks flights, better seats, hotel drops, rental cars, nearby airports, flexible dates, and price changes 24/7. When she finds something worth your attention, she sends you a simple SMS or email explaining <strong>what changed and why it may be worth acting on.</strong> You don't have to hunt across travel sites. <strong>Astra keeps looking for you.</strong>"
+        </div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:4px;">
+          <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">UX Assessment</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>The subtitle "keeps working after you search" is the single best product descriptor in all three — concisely identifies what's unique</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>"what changed and why it may be worth acting on" — sophisticated, respects user intelligence, avoids false urgency</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>"Astra keeps looking for you" — excellent closer. Five words that capture the entire value prop</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--star);">✦</span>Best suited for paid tier upsell pages, landing page heroes, and App Store description</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--risk);">—</span>Slightly more formal — the word "hunting" in the next version feels more human than "hunt across travel sites"</div>
+          </div>
+        </div>
+        <div class="vc-tagline" style="color:var(--star);">"Keeps working after you search" must appear somewhere in the UI — permanently."</div>
+      </div>
+    </div>
+
+    <!-- CONVERSATIONAL -->
+    <div id="tab-conversational" class="voice-panel">
+      <div class="voice-copy" style="border-left-color:var(--aurora);">
+        <div class="vc-label" style="color:var(--aurora);">Conversational Version · Analysis</div>
+        <div class="vc-headline">
+          Ask <em>Astra.</em>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Original Copy</div>
+        <div class="vc-body">
+          "Already booked a trip? Looking at flights? Wondering if there's a better hotel, seat, date, airport, or car deal? <strong>Ask Astra.</strong> Astra is SlickTrip's AI travel agent. Tell her what you're planning, and she'll keep checking in the background. If she finds something better, she'll let you know by SMS or email. Maybe it's a cheaper flight. Maybe it's a better seat. Maybe it's a nicer hotel for the same money. Maybe it's a better date to travel. Maybe it's a car deal you would have missed. <strong>No risk. No pressure. Just ask Astra and see what she can dig up.</strong>"
+        </div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:4px;">
+          <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">UX Assessment</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>The "Maybe it's…" anaphoric structure is poetry — it matches how users actually think about travel uncertainty</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>"Ask Astra" as both the headline and the CTA is brilliant — the UI writes itself around this pattern</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>Perfect for the app's conversational search interface — the copy IS the UX pattern</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--save);">✦</span>"what she can dig up" — earthy, warm, contrasts beautifully with the celestial Astra name. Genius micro-tension</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;"><span style="color:var(--risk);">—</span>Too long for a single hero moment, but perfect as an onboarding walkthrough or empty-state copy</div>
+          </div>
+        </div>
+        <div class="vc-tagline" style="color:var(--aurora);">"The Maybe structure belongs in the onboarding. The 'Ask Astra' frame belongs everywhere else."</div>
+      </div>
+    </div>
+
+    <!-- RECOMMENDED -->
+    <div id="tab-recommended" class="voice-panel">
+      <div class="voice-copy" style="border-left-color:var(--save);">
+        <div class="our-rec-badge">★ Our Recommendation</div>
+        <div class="vc-label" style="color:var(--save);">Synthesised Version · The Best of All Three</div>
+        <div class="vc-headline">
+          Ask <em>Astra.</em><br>
+          <span style="font-size:0.65em;color:var(--text2);font-style:normal;">She keeps looking after you stop searching.</span>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin:20px 0 14px;">Synthesised Hero Copy</div>
+        <div class="vc-body" style="font-size:16px;max-width:640px;">
+          Tell Astra about a trip — booked, almost booked, or just a dream. She'll keep checking flights, seats, hotels, cars, dates, and prices in the background, 24/7. When she finds something worth acting on, she'll text you and tell you exactly what changed and why.
+          <br><br>
+          <strong>No risk. No pressure. No need to keep looking yourself.</strong>
+          <br><br>
+          Just ask Astra and see what she can dig up.
+        </div>
+
+        <div style="margin-top:4px;">
+          <div class="vc-cta">★ Ask Astra about your trip</div>
+        </div>
+
+        <div style="background:var(--raised);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-top:24px;">
+          <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--save);margin-bottom:14px;">Why This Synthesis Works</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--save);flex-shrink:0;">✦</span>Opens with "Ask Astra" — the conversational pattern that makes the UI feel like a person, not a form</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--save);flex-shrink:0;">✦</span>Subtitle "keeps looking after you stop searching" — the premium version's best line, tightened</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--save);flex-shrink:0;">✦</span>"booked, almost booked, or just a dream" — three entry points that cover 100% of user mental models without a bullet list</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--save);flex-shrink:0;">✦</span>"what changed and why" — retained from premium. Signals intelligence, not just alerts</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--save);flex-shrink:0;">✦</span>Triple-negative from direct version intact — "No risk. No pressure. No need." Three punches. The best marketing line in the set.</div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--save);flex-shrink:0;">✦</span>"see what she can dig up" — the conversational version's earthy closer, preserved. It humanises the celestial name perfectly.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;background:rgba(110,255,196,0.05);border:1px solid rgba(110,255,196,0.15);border-radius:12px;padding:18px 22px;">
+          <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--save);margin-bottom:12px;">Copy Placement Guide</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:12px;align-items:center;">
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:110px;">App Home Hero</span>
+              <span style="color:var(--text);">→ "Ask Astra." as H1 + subtitle below</span>
+            </div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:12px;align-items:center;">
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:110px;">Onboarding Step 1</span>
+              <span style="color:var(--text);">→ The "Maybe it's…" structure from conversational</span>
+            </div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:12px;align-items:center;">
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:110px;">App Store Listing</span>
+              <span style="color:var(--text);">→ Premium version, verbatim — it's perfectly structured</span>
+            </div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:12px;align-items:center;">
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:110px;">Web Landing Page</span>
+              <span style="color:var(--text);">→ Synthesised version in full</span>
+            </div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:12px;align-items:center;">
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:110px;">Search Empty State</span>
+              <span style="color:var(--text);">→ "Ask Astra" as the prompt field placeholder</span>
+            </div>
+            <div style="font-size:13px;color:var(--text2);display:flex;gap:12px;align-items:center;">
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:110px;">SMS Sign-Up Gate</span>
+              <span style="color:var(--text);">→ "No risk. No pressure. No need to keep checking yourself."</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ BRAND IDENTITY ═══════ -->
+<section class="section" id="brand-id">
+  <div class="wrap reveal">
+    <div class="section-head">
+      <div class="eyebrow"><span class="ew-dot"></span>02 · Astra Brand Identity</div>
+      <h2 class="title-lg">A name from the stars.<br>A voice from <em>earth.</em></h2>
+      <p class="lead" style="margin-top:14px;">
+        "Astra" (Latin: stars) carries celestial authority while the copy keeps her grounded and human. This tension — cosmic intelligence, plain language — is the brand's personality engine.
+      </p>
+    </div>
+
+    <div class="brand-grid" style="margin-top:40px;">
+      <div class="brand-cell">
+        <div class="bc-label">Name Meaning</div>
+        <h3>Astra</h3>
+        <p>From the Latin <em>astra</em> — stars. Implies watching, omniscience, guidance. She can see things from above that you can't see from the ground. But she texts you in plain English.</p>
+        <div style="margin-top:18px;font-family:var(--font-mono);font-size:11px;color:var(--text3);line-height:1.8;">
+          astra → astral → astronomy<br>
+          always watching · never sleeping<br>
+          above the noise · working for you
+        </div>
+      </div>
+
+      <div class="brand-cell">
+        <div class="bc-label">Colour Palette</div>
+        <h3>Celestial & Warm</h3>
+        <p>Deep void backgrounds with violet and aurora accents. Warm amber for alerts. Mint green for savings. Every colour earns its place by carrying meaning.</p>
+        <div class="swatch-row" style="margin-top:22px;margin-bottom:24px;">
+          <div class="swatch" style="background:var(--astra);" data-name="Astra"></div>
+          <div class="swatch" style="background:var(--astra3);" data-name="Anchor"></div>
+          <div class="swatch" style="background:var(--aurora);" data-name="Aurora"></div>
+          <div class="swatch" style="background:var(--save);" data-name="Savings"></div>
+          <div class="swatch" style="background:var(--dawn);" data-name="Alert"></div>
+          <div class="swatch" style="background:var(--star);" data-name="Premium"></div>
+        </div>
+      </div>
+
+      <div class="brand-cell">
+        <div class="bc-label">Typography</div>
+        <h3>Serif + Sans</h3>
+        <p>Cormorant Garamond for display — elegant, editorial, timeless. Geist Sans for UI — clean, confident, precise. Geist Mono for data and labels — technical trust.</p>
+        <div class="type-spec" style="margin-top:14px;">
+          <div class="ts-row">
+            <span style="font-family:var(--font-serif);font-size:22px;font-weight:300;font-style:italic;">Astra</span>
+            <span class="ts-name">Display · Serif</span>
+          </div>
+          <div class="ts-row">
+            <span style="font-family:var(--font-sans);font-size:15px;font-weight:500;">Keep looking for you.</span>
+            <span class="ts-name">Body · Sans</span>
+          </div>
+          <div class="ts-row">
+            <span style="font-family:var(--font-mono);font-size:12px;color:var(--save);">$489 · −$238</span>
+            <span class="ts-name">Data · Mono</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-cell">
+        <div class="bc-label">Voice Principle</div>
+        <h3>Smart Friend, Not Bot</h3>
+        <p>Astra is brilliant but never shows off. She gives you the number, the reason, and the action — in that order. She never says "I have detected" or "a price change has occurred." She says "It dropped. Here's why it matters."</p>
+        <div style="margin-top:16px;background:var(--raised);border-radius:8px;padding:12px 14px;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--risk);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">✗ Never say</div>
+          <div style="font-size:12px;color:var(--text3);font-style:italic;">"A price change of $89 has been detected on your monitored route."</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--save);letter-spacing:0.1em;text-transform:uppercase;margin:10px 0 6px;">✦ Always say</div>
+          <div style="font-size:12px;color:var(--text);font-style:italic;">"Your London flight just dropped $89. This is the cheapest it's been this month. Want me to hold your eye on it?"</div>
+        </div>
+      </div>
+
+      <div class="brand-cell">
+        <div class="bc-label">Personality Dials</div>
+        <h3>Where Astra Sits</h3>
+        <p>Calibrated to feel trustworthy and warm without being precious. She's helpful, not pushy. Confident, not cold. Smart, not showy.</p>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-bottom:4px;"><span>Casual</span><span>Formal</span></div>
+            <div style="height:4px;background:var(--raised);border-radius:4px;overflow:hidden;"><div style="width:35%;height:100%;background:linear-gradient(90deg,var(--astra3),var(--astra));border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-bottom:4px;"><span>Quiet</span><span>Urgent</span></div>
+            <div style="height:4px;background:var(--raised);border-radius:4px;overflow:hidden;"><div style="width:55%;height:100%;background:linear-gradient(90deg,var(--astra3),var(--dawn));border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-bottom:4px;"><span>Algorithmic</span><span>Human</span></div>
+            <div style="height:4px;background:var(--raised);border-radius:4px;overflow:hidden;"><div style="width:70%;height:100%;background:linear-gradient(90deg,var(--astra3),var(--save));border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-bottom:4px;"><span>Reactive</span><span>Proactive</span></div>
+            <div style="height:4px;background:var(--raised);border-radius:4px;overflow:hidden;"><div style="width:80%;height:100%;background:linear-gradient(90deg,var(--astra3),var(--aurora));border-radius:4px;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-cell">
+        <div class="bc-label">Mark Design Direction</div>
+        <h3>The Astra Symbol ★</h3>
+        <p>A rotating conic gradient circle — celestial motion, no hard stop, always moving. Suggests continuous monitoring without requiring literal communication of "this is tracking you." The mark is alive.</p>
+        <div style="display:flex;align-items:center;gap:16px;margin-top:20px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(from 200deg, var(--astra3), var(--astra), var(--aurora), var(--astra3));animation:rotate-slow 6s linear infinite;box-shadow:0 0 30px rgba(200,184,255,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;color:white;">★</div>
+          <div style="width:36px;height:36px;border-radius:50%;background:conic-gradient(from 200deg, var(--astra3), var(--astra), var(--aurora), var(--astra3));animation:rotate-slow 6s linear infinite;box-shadow:0 0 16px rgba(200,184,255,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;color:white;">★</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:conic-gradient(from 200deg, var(--astra3), var(--astra), var(--aurora), var(--astra3));animation:rotate-slow 6s linear infinite;box-shadow:0 0 10px rgba(200,184,255,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;color:white;">★</div>
+          <div style="font-size:12px;color:var(--text3);">Scale system — 52px hero, 36px card, 24px inline</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ SCREENS ═══════ -->
+<section class="section" id="screens">
+  <div class="wrap">
+
+    <!-- SCREEN 1: ASTRA ENTRY -->
+    <div class="split reveal" style="margin-bottom:80px;">
+      <div>
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="astra-screen">
+              <div class="as-status">
+                <span style="font-family:var(--font-mono);font-size:12px;">9:41</span>
+                <span style="font-size:12px;">📶 🔋</span>
+              </div>
+              <div class="as-header">
+                <div class="as-logo">
+                  <div class="as-mark"></div>
+                  <div class="as-name" style="font-family:var(--font-serif);font-size:15px;">Astra</div>
+                  <div class="as-tag">by SlickTrip · Watching 4 trips</div>
+                </div>
+              </div>
+              <div class="as-chat">
+                <div class="as-bubble astra">
+                  <div class="ab-label">Astra</div>
+                  Good morning. Your <span class="ab-highlight">London flight dropped $89</span> overnight — it's now <span class="ab-highlight">$489</span>, the cheapest since April. Your target was $520. This is your moment.
+                  <div class="ab-link">View fare & book →</div>
+                </div>
+                <div class="as-bubble user">"Is this the cheapest it gets for July?"</div>
+                <div class="as-bubble astra">
+                  <div class="ab-label">Astra</div>
+                  Almost. July prices historically bottom out <span class="ab-alert">3–4 weeks ahead</span> of travel — you're right in that window now. If you wait past Thursday, there's a <span class="ab-alert">67% chance</span> it rises back above $550. I'd book today or tomorrow.
+                </div>
+                <div class="as-bubble astra">
+                  <div class="ab-label">Astra · Also watching</div>
+                  Your Tokyo Bucket List hit <span class="ab-highlight">$541</span> this morning — <span class="ab-highlight">$208 below average</span> for October. Want me to dig deeper on that?
+                </div>
+              </div>
+              <div class="as-input-row">
+                <div class="as-input">
+                  <div class="ai-text">Ask Astra about your trip…</div>
+                  <div class="as-send">★</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feat-desc">
+        <div class="fd-label">Screen 01 · Astra Chat</div>
+        <h3 class="feat-title">
+          <em>Ask Astra.</em><br>
+          She already knows<br>what you need.
+        </h3>
+        <p class="feat-body">
+          The Astra screen replaces the blank search form entirely. It opens to an active, intelligent conversation — Astra has already been watching overnight and surfaces the most important insight first. Users experience value before typing a single word.
+        </p>
+        <div class="feat-points">
+          <div class="feat-point">
+            <div class="fp-icon">★</div>
+            <div class="fp-body">
+              <h4>Proactive Narration</h4>
+              <p>Astra speaks first. Every morning session opens with her most important finding — not a greeting, a result.</p>
+            </div>
+          </div>
+          <div class="feat-point">
+            <div class="fp-icon">🧠</div>
+            <div class="fp-body">
+              <h4>Probabilistic Reasoning</h4>
+              <p>"67% chance it rises" — Astra reasons aloud, like a friend who works in the airline industry. Not just what, but why.</p>
+            </div>
+          </div>
+          <div class="feat-point">
+            <div class="fp-icon">💬</div>
+            <div class="fp-body">
+              <h4>"Ask Astra" as Universal CTA</h4>
+              <p>One conversational input replaces all forms. Users type naturally — "Is this a good price?" "Find me something warm in October" — Astra handles the rest.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: HOME FEED -->
+    <div class="split flip reveal">
+      <div>
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="home-screen">
+              <div class="as-status" style="padding:14px 18px 8px;">
+                <span style="font-family:var(--font-mono);font-size:12px;">9:41</span>
+                <span style="font-size:12px;">📶 🔋</span>
+              </div>
+              <div class="hs-greeting">
+                <div class="hs-time">Tuesday, July 8</div>
+                <div class="hs-head"><em>3 deals</em> worth your attention</div>
+              </div>
+              <div class="astra-card">
+                <div class="ac-mark">★</div>
+                <div class="ac-body">
+                  <div class="ac-label">Astra · Last checked 4 min ago</div>
+                  <div class="ac-text">London dropped to <span class="save">$489</span>. Tokyo at <span class="save">$541</span>. Your August dates are <span class="alert-hi">still expensive</span> — Astra suggests shifting to Sep 3.</div>
+                </div>
+              </div>
+              <div class="hs-section-label">Deals from JFK <span>See all</span></div>
+              <div class="deal-scroll">
+                <div class="dc">
+                  <div class="dc-img tokyo">🗼<span class="dc-badge low">LOW</span></div>
+                  <div class="dc-body">
+                    <div class="dc-city">Tokyo</div>
+                    <div class="dc-price">From <span class="p">$541</span></div>
+                  </div>
+                </div>
+                <div class="dc">
+                  <div class="dc-img lisbon">🏛<span class="dc-badge hot">HOT</span></div>
+                  <div class="dc-body">
+                    <div class="dc-city">Lisbon</div>
+                    <div class="dc-price">From <span class="p">$312</span></div>
+                  </div>
+                </div>
+                <div class="dc">
+                  <div class="dc-img miami">🌴<span class="dc-badge low">LOW</span></div>
+                  <div class="dc-body">
+                    <div class="dc-city">Miami</div>
+                    <div class="dc-price">From <span class="p">$118</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="hs-cal">
+                <div class="cal-header">
+                  <div class="cal-route" style="font-family:var(--font-serif);">JFK → LHR</div>
+                  <div class="cal-month">July 2026</div>
+                </div>
+                <div class="cal-grid">
+                  <div class="cd empty">29</div><div class="cd empty">30</div>
+                  <div class="cd dear">1</div><div class="cd dear">2</div><div class="cd mid">3</div><div class="cd mid">4</div>
+                  <div class="cd mid">5</div><div class="cd cheap">6</div><div class="cd cheap">7</div>
+                  <div class="cd cheap sel">8</div><div class="cd cheap">9</div><div class="cd mid">10</div><div class="cd mid">11</div>
+                  <div class="cd dear">12</div><div class="cd dear">13</div><div class="cd cheap">14</div>
+                  <div class="cd cheap">15</div><div class="cd mid">16</div><div class="cd dear">17</div><div class="cd dear">18</div>
+                </div>
+              </div>
+              <div class="bottom-nav">
+                <div class="bn-item active"><span class="bn-icon">🏠</span><span>Home</span></div>
+                <div class="bn-item"><span class="bn-icon">🔍</span><span>Search</span></div>
+                <div class="bn-fab">★</div>
+                <div class="bn-item"><span class="bn-icon">📍</span><span>Tracked</span></div>
+                <div class="bn-item"><span class="bn-icon">💼</span><span>Trips</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feat-desc">
+        <div class="fd-label">Screen 02 · Home Feed</div>
+        <h3 class="feat-title">
+          The app that was<br>
+          <em>already working</em><br>while you slept.
+        </h3>
+        <p class="feat-body">
+          The home screen opens to intelligence, not a form. Astra's summary card surfaces the most important insight from overnight monitoring. The colour-coded price calendar shows at a glance whether today is a good day to fly. Deal cards are filtered to the user's departure airport — never generic.
+        </p>
+        <div class="feat-points">
+          <div class="feat-point">
+            <div class="fp-icon">🗓</div>
+            <div class="fp-body">
+              <h4>Price Calendar Always Visible</h4>
+              <p>Green/amber/red per day on every tracked route — Hopper's most powerful UX pattern embedded into the home experience, not hidden in search.</p>
+            </div>
+          </div>
+          <div class="feat-point">
+            <div class="fp-icon">💰</div>
+            <div class="fp-body">
+              <h4>Airport-Personalised Deal Cards</h4>
+              <p>Every deal card shows prices from the user's home airport(s). Never a generic "from $299" that requires a second search to verify it applies to them.</p>
+            </div>
+          </div>
+          <div class="feat-point">
+            <div class="fp-icon">★</div>
+            <div class="fp-body">
+              <h4>Astra FAB = Universal Agent Access</h4>
+              <p>The central bottom-nav button always opens Astra's chat. One tap to the travel agent, from anywhere in the app.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ ALERTS ═══════ -->
+<section class="section" id="alerts">
+  <div class="wrap reveal">
+    <div class="section-head">
+      <div class="eyebrow aurora"><span class="ew-dot"></span>04 · Alert Design System</div>
+      <h2 class="title-lg">
+        Every text is a<br>
+        relationship <em>moment.</em>
+      </h2>
+      <p class="lead" style="margin-top:14px;">
+        SlickTrip's SMS-first model is the right call. Astra's voice makes it work. The alert isn't a notification — it's a message from someone who's been watching out for you. Design it accordingly.
+      </p>
+    </div>
+
+    <div class="alert-showcase" style="margin-top:40px;">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;margin-bottom:16px;">SMS Alert — Astra Voice</div>
+        <div class="sms-bubble">
+          <div class="sb-from">Astra · SlickTrip</div>
+          <div class="sb-text">
+            Your <span class="route">JFK → London</span> just dropped to <span class="price">$489</span> — that's <span class="saving">$238 below average</span> and the cheapest I've seen in 90 days. <span class="context">Your target was $520.</span>
+            <br><br>
+            These fares typically hold for 2–4 hours. <span class="urgency">This is your window.</span>
+          </div>
+          <div class="sms-actions">
+            <div class="sms-btn book">Book now →</div>
+            <div class="sms-btn snooze">Snooze 1hr</div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;margin:28px 0 16px;">Push Notification</div>
+        <div class="push-card">
+          <div class="push-icon">★</div>
+          <div class="push-body">
+            <div class="pb-app">Astra · SlickTrip</div>
+            <div class="pb-title">Tokyo just dropped $208</div>
+            <div class="pb-msg">JFK → TYO · Oct 9–18 · Now <span class="pb-save">$541</span>. Cheapest this autumn. 4 seats at this price — tap to see.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-principles">
+        <h3 style="font-family:var(--font-serif);font-size:22px;font-weight:400;margin-bottom:20px;">The 5-Point <em>Astra Alert Standard</em></h3>
+        <div class="ap">
+          <div class="ap-num">01</div>
+          <div>
+            <div class="ap-title">Specific Numbers, Always</div>
+            <div class="ap-body">"$238 below average" not "prices have dropped." "$489" not "a great price." The number is the news — lead with it every time.</div>
+          </div>
+        </div>
+        <div class="ap">
+          <div class="ap-num">02</div>
+          <div>
+            <div class="ap-title">Reference the User's Own Goal</div>
+            <div class="ap-body">"Your target was $520" — this proves Astra was listening and makes the alert personal, not generic. The user remembers why this matters.</div>
+          </div>
+        </div>
+        <div class="ap">
+          <div class="ap-num">03</div>
+          <div>
+            <div class="ap-title">Honest Urgency — Never Manufactured</div>
+            <div class="ap-body">"These fares typically hold 2–4 hours" is true and derived from SlickTrip's real-time data. Urgency without fabrication. Trust without pressure.</div>
+          </div>
+        </div>
+        <div class="ap">
+          <div class="ap-num">04</div>
+          <div>
+            <div class="ap-title">Exactly Two Response Options</div>
+            <div class="ap-body">Act or defer. "Book now" and "Snooze 1hr." Never more. Every additional option halves the chance of any action being taken.</div>
+          </div>
+        </div>
+        <div class="ap">
+          <div class="ap-num">05</div>
+          <div>
+            <div class="ap-title">Astra's Voice, Not a System's</div>
+            <div class="ap-body">"This is your window" — not "price alert triggered." Astra writes every alert as if she's nudging a friend who asked her to keep an eye on something.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ AI FEATURES ═══════ -->
+<section class="section" id="ai">
+  <div class="wrap reveal">
+    <div class="section-head">
+      <div class="eyebrow"><span class="ew-dot"></span>05 · Astra AI Feature Suite</div>
+      <h2 class="title-lg">
+        What Astra can do<br>
+        that <em>no one else does.</em>
+      </h2>
+      <p class="lead" style="margin-top:14px;">
+        These eight capabilities either don't exist in the market or exist in fragmented, inferior forms. Each one is buildable on SlickTrip's existing real-time data infrastructure.
+      </p>
+    </div>
+
+    <div class="ai-masonry" style="margin-top:40px;">
+
+      <div class="aic span2">
+        <div class="ai-chip"><span class="acd"></span><span>Flagship</span></div>
+        <div class="glow" style="background:var(--astra);"></div>
+        <h3>Astra Watches. You Live Your Life.</h3>
+        <p>The core differentiator: Astra isn't a search engine you return to — she's a background agent you brief once. Tell her about a trip. She monitors flights, seats, hotels, cars, nearby airports, and flexible dates continuously. When something changes in a way that matters to you, she texts. This is the "travel agent in your pocket" made literal — not a metaphor for a better search form, but an actual agent doing the work.</p>
+        <div class="ex">
+          <span class="eh">User briefing:</span> "I want to fly to Barcelona in September, 10 nights, budget £700 return, flexible on exact dates"<br><br>
+          <span class="es">Astra, 3 days later:</span> "Sep 4–14 just opened at <span class="es">£618</span>. That's <span class="es">£182 under</span> your budget and the only availability under £700 I've seen this month. 6 seats. Want me to hold your eye on it?"
+        </div>
+      </div>
+
+      <div class="aic">
+        <div class="ai-chip"><span class="acd"></span><span>AI Feature</span></div>
+        <div class="glow" style="background:var(--dawn);"></div>
+        <h3>Fare Personality Score</h3>
+        <p>Every route gets an AI-generated profile: how volatile it is, when prices historically bottom out, the ideal booking window, and whether it's safe to wait. Users stop guessing about timing.</p>
+        <div class="ex">
+          <span class="eh">JFK → LHR · Economy</span><br>
+          Volatility: <span class="ea">Moderate</span> · Book sweet spot: <span class="es">3–5 wks ahead</span> · Spikes: <span class="ea">Fri/Sun</span> · Avg saving by waiting correctly: <span class="es">$94</span>
+        </div>
+      </div>
+
+      <div class="aic">
+        <div class="ai-chip"><span class="acd"></span><span>AI Feature</span></div>
+        <div class="glow" style="background:var(--aurora);"></div>
+        <h3>Calendar Flex Finder</h3>
+        <p>With calendar permission, Astra identifies actual free windows and cross-references them with the cheapest travel windows for your saved destinations. She suggests trips you didn't know you had time for.</p>
+        <div class="ex">
+          <span class="ep">Astra:</span> "You have 9 days free Oct 9–17. That's <span class="es">Japan's cheapest month</span> by 28%. JFK → NRT is <span class="es">$489</span> right now — your best opening all year."
+        </div>
+      </div>
+
+      <div class="aic">
+        <div class="ai-chip"><span class="acd"></span><span>AI Feature</span></div>
+        <div class="glow" style="background:var(--save);"></div>
+        <h3>Group Sync</h3>
+        <p>Share a trip link. Friends connect their home airports. Astra finds the cheapest combination across all departure cities — solving the hardest group travel coordination problem no competitor touches.</p>
+        <div class="ex">
+          <span class="eh">3 friends: NYC · Chicago · LA → Cancún</span><br>
+          <span class="es">All fly Aug 12:</span> JFK $371 · ORD $298 · LAX $412<br>
+          Total: <span class="es">$1,081</span> vs $1,440 meeting in NYC first
+        </div>
+      </div>
+
+      <div class="aic">
+        <div class="ai-chip"><span class="acd"></span><span>AI Feature</span></div>
+        <div class="glow" style="background:var(--astra2);"></div>
+        <h3>AI Seat Scout</h3>
+        <p>Astra learns seating preferences (aisle, legroom, quiet zones) and alerts when a preferred seat opens on a tracked flight — not just when the price drops. The seat is part of the deal.</p>
+        <div class="ex">
+          <span class="ep">Astra:</span> "32A on AA176 just opened — aisle, extra legroom, <span class="es">£0 upgrade</span> (normally £45). Only happens when someone cancels. Want it?"
+        </div>
+      </div>
+
+      <div class="aic">
+        <div class="ai-chip"><span class="acd"></span><span>AI Feature</span></div>
+        <div class="glow" style="background:var(--risk);"></div>
+        <h3>Disruption Predictor</h3>
+        <p>Before booking, Astra cross-references weather, airport congestion data, and historical delay rates for the specific route and day. She flags risk and suggests alternatives before it costs you.</p>
+        <div class="ex">
+          <span class="ea">⚠ Risk:</span> JFK → ORD · Friday Aug 9<br>
+          <span style="color:var(--risk);">34% delay rate</span> · Storm forecast · Thu Aug 8: <span class="es">$22 cheaper, 91% on-time</span>
+        </div>
+      </div>
+
+      <div class="aic">
+        <div class="ai-chip"><span class="acd"></span><span>AI Feature</span></div>
+        <div class="glow" style="background:var(--star);"></div>
+        <h3>Trip Mood Engine</h3>
+        <p>"I need to escape" — Astra interprets mood signals and surfaces emotionally relevant destinations with live deals. Travel is driven by feeling. Search should understand that.</p>
+        <div class="ex">
+          <span class="eh">User:</span> "I need something different"<br>
+          <span class="ep">Astra:</span> "Bali · quiet, 4.8★ beaches · <span class="es">$612 from JFK</span> — 3rd lowest this year. Or Lisbon: walkable, unhurried, <span class="es">$298</span>."
+        </div>
+      </div>
+
+      <div class="aic">
+        <div class="ai-chip"><span class="acd"></span><span>AI Feature</span></div>
+        <div class="glow" style="background:var(--aurora);"></div>
+        <h3>Post-Booking Companion</h3>
+        <p>Once a trip is booked, Astra shifts from deal-hunter to companion: check-in reminders with seat upgrade checks, gate change alerts, packing suggestions based on destination weather, baggage rules for the specific airline. The pocket agent that doesn't clock off at booking.</p>
+        <div class="ex">
+          <span class="ep">T-48hrs · JFK → LHR:</span><br>
+          ✦ Check-in opens in <span class="es">2 hours</span><br>
+          ✦ London: 🌧 rain · pack waterproof<br>
+          ✦ Seat 32A · still yours<br>
+          ✦ Upgrade to Premium: <span class="ea">£89 available</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ PRICING ═══════ -->
+<section class="section" id="pricing">
+  <div class="wrap reveal">
+    <div class="section-head">
+      <div class="eyebrow save"><span class="ew-dot"></span>06 · Monetisation</div>
+      <h2 class="title-lg">
+        Free gets you <em>Astra.</em><br>
+        Premium makes her<br>
+        <strong>unstoppable.</strong>
+      </h2>
+    </div>
+
+    <div class="pricing" style="margin-top:40px;">
+      <div class="pc">
+        <div class="tier">Explorer · Free</div>
+        <div class="price"><sup></sup>$0</div>
+        <div class="cadence">always free · no card needed</div>
+        <ul>
+          <li>Track up to 5 routes</li>
+          <li>Daily SMS + email alerts</li>
+          <li>Price calendar view</li>
+          <li>Bucket List (5 destinations)</li>
+          <li>Ask Astra (basic)</li>
+          <li>Home airport deal feed</li>
+          <li>Book now / wait verdict</li>
+        </ul>
+      </div>
+      <div class="pc hero-tier">
+        <div class="popular-badge">Most popular</div>
+        <div class="tier">Flyer · Premium</div>
+        <div class="price"><sup>$</sup>9</div>
+        <div class="cadence">per month · cancel anytime</div>
+        <ul>
+          <li>Unlimited route tracking</li>
+          <li>Near-real-time alerts (every 15 min)</li>
+          <li>Fare Personality Score — all routes</li>
+          <li>AI Seat Scout on saved flights</li>
+          <li>Calendar Flex Finder</li>
+          <li>Mistake fare priority access</li>
+          <li>Disruption Predictor</li>
+          <li>Group Sync (up to 6)</li>
+          <li>Post-booking Companion Mode</li>
+          <li>Business + Premium Economy deals</li>
+          <li>Full Ask Astra conversational access</li>
+        </ul>
+      </div>
+      <div class="pc">
+        <div class="tier">Nomad · Elite</div>
+        <div class="price"><sup>$</sup>19</div>
+        <div class="cadence">per month · annual billing</div>
+        <ul>
+          <li>Everything in Premium</li>
+          <li>First Class &amp; private deals</li>
+          <li>Astra Concierge Mode</li>
+          <li>Trip Mood Engine (full)</li>
+          <li>Price Freeze (lock for 6 hrs)</li>
+          <li>Priority SMS (under 5 min)</li>
+          <li>Multi-city auto-optimiser</li>
+          <li>Early access to new features</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ ROADMAP ═══════ -->
+<section class="section" id="roadmap">
+  <div class="wrap reveal">
+    <div class="section-head">
+      <div class="eyebrow dawn"><span class="ew-dot"></span>07 · Build Sequence</div>
+      <h2 class="title-lg">
+        Three phases.<br>
+        Each one makes Astra<br>
+        <em>more indispensable.</em>
+      </h2>
+    </div>
+
+    <div class="roadmap" style="margin-top:40px;">
+      <div class="rm-phase">
+        <div class="rm-label">Phase 1 · 0–6 Weeks</div>
+        <div class="rm-title" style="font-family:var(--font-serif);">Foundation</div>
+        <div class="rm-items">
+          <div class="rm-item">Launch Astra brand identity across app + web</div>
+          <div class="rm-item">Replace homepage with personalised deal feed</div>
+          <div class="rm-item">New 5-step onboarding (live deal reveal before sign-up)</div>
+          <div class="rm-item">Colour-coded price calendar on all search</div>
+          <div class="rm-item">Book-now / wait verdict on every result</div>
+          <div class="rm-item">Price range bar ("lowest since April")</div>
+          <div class="rm-item">Bottom navigation bar — mobile-native</div>
+          <div class="rm-item">Rewrite all SMS / push alert copy in Astra voice</div>
+          <div class="rm-item">Nearby airport auto-suggest on search</div>
+        </div>
+      </div>
+      <div class="rm-phase active">
+        <div class="rm-label">Phase 2 · 6–16 Weeks</div>
+        <div class="rm-title" style="font-family:var(--font-serif);">Intelligence</div>
+        <div class="rm-items">
+          <div class="rm-item">Ask Astra conversational interface (v1)</div>
+          <div class="rm-item">Natural language search parsing</div>
+          <div class="rm-item">Fare Personality Score on all routes</div>
+          <div class="rm-item">Premium tier launch + paywall</div>
+          <div class="rm-item">Unified hotel + flight design system</div>
+          <div class="rm-item">AI Seat Scout integration</div>
+          <div class="rm-item">Astra proactive morning summary</div>
+          <div class="rm-item">Skeleton loading states (remove all spinners)</div>
+          <div class="rm-item">Disruption Predictor (beta)</div>
+        </div>
+      </div>
+      <div class="rm-phase">
+        <div class="rm-label">Phase 3 · 16–36 Weeks</div>
+        <div class="rm-title" style="font-family:var(--font-serif);">Ecosystem</div>
+        <div class="rm-items">
+          <div class="rm-item">Calendar integration + Flex Finder</div>
+          <div class="rm-item">Group Sync multi-traveller coordination</div>
+          <div class="rm-item">Trip Mood Engine</div>
+          <div class="rm-item">Post-booking Companion Mode</div>
+          <div class="rm-item">Real-time Price Freeze (Elite)</div>
+          <div class="rm-item">Share-a-deal viral mechanic</div>
+          <div class="rm-item">Elite tier + Nomad launch</div>
+          <div class="rm-item">Multi-city auto-optimiser</div>
+          <div class="rm-item">Astra API for travel partners</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ CLOSING ═══════ -->
+<section class="section" style="padding-bottom:60px;">
+  <div class="wrap reveal">
+    <div style="max-width:680px;">
+      <div class="eyebrow" style="margin-bottom:20px;"><span class="ew-dot"></span>The North Star</div>
+      <h2 style="font-family:var(--font-serif);font-size:clamp(36px,6vw,68px);font-weight:300;line-height:1.0;letter-spacing:-0.02em;margin-bottom:24px;">
+        When someone asks<br>
+        <em>"should I book<br>this flight?"</em><br>
+        the answer is Astra.
+      </h2>
+      <p style="font-size:17px;color:var(--text2);line-height:1.8;max-width:520px;">
+        Not a search engine. Not an email newsletter. Not a hunch. Astra — because she's been watching, thinking, and waiting for exactly this moment. That's what "keeps working after you search" actually means in practice.
+      </p>
+      <div style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;">
+        <div class="btn-primary">★ Ask Astra about your trip</div>
+        <a href="#brand" class="btn-ghost">Back to recommendation ↑</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+  <div>
+    <div style="font-family:var(--font-serif);font-size:20px;font-weight:300;"><em>Astra</em> by SlickTrip</div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:0.1em;">She keeps looking for you.</div>
+  </div>
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:0.1em;text-align:right;">
+    UX Vision · Refined June 2026<br>
+    For Internal Use Only
+  </div>
+</footer>
+
+<script>
+// Tab switching
+function switchTab(id) {
+  document.querySelectorAll('.voice-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.voice-panel').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
+  const panels = { direct:'tab-direct', premium:'tab-premium', conversational:'tab-conversational', recommended:'tab-recommended' };
+  const el = document.getElementById(panels[id]);
+  if(el){ el.classList.add('active'); el.style.display='block'; }
+  document.querySelectorAll('.voice-tab').forEach(t => {
+    if(t.textContent.toLowerCase().includes(id) || (id==='recommended' && t.textContent.includes('★'))) {
+      t.classList.add('active');
+    }
+  });
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); }});
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Init panels
+document.querySelectorAll('.voice-panel').forEach(p => { if(!p.classList.contains('active')) p.style.display='none'; });
+</script>
+
+</body>
+</html>
